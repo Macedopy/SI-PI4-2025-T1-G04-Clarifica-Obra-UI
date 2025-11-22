@@ -16,55 +16,64 @@ interface MaterialItem {
 interface MateriaisUtilizadosProps {
   isReadOnly?: boolean;
   faseId: string;
-  onMateriaisChange?: (materiais: any[]) => void; // ADICIONADO
+
 }
 
-export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
-  isReadOnly = false,
-  faseId,
-  onMateriaisChange
+export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({ 
+  isReadOnly = false, 
+  faseId 
+
 }) => {
   const STORAGE_KEY = `materiais-fase-${faseId}`;
   const [materiais, setMateriais] = useState<MaterialItem[]>([]);
   const [editandoId, setEditandoId] = useState<string | null>(null);
-  const [editTemp, setEditTemp] = useState({ nome: '', categoria: '', unidade: '', estoqueMinimo: 10, adicao: 0, consumo: 0 });
+
+  // Campos temporários para edição
+  const [editTemp, setEditTemp] = useState({
+    nome: '',
+    categoria: '',
+    unidade: '',
+    estoqueMinimo: 0,
+    adicao: 0,
+    consumo: 0
+  });
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      const parsed = JSON.parse(saved);
-      setMateriais(parsed);
-      onMateriaisChange?.(parsed.map(mapToDTO));
+      setMateriais(JSON.parse(saved));
+
+
     }
   }, [faseId]);
 
   useEffect(() => {
     if (materiais.length > 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(materiais));
-      onMateriaisChange?.(materiais.map(mapToDTO));
+
     }
   }, [materiais]);
 
-  const mapToDTO = (m: MaterialItem) => ({
-    id: m.id,
-    name: m.nome.trim() || "Material sem nome",
-    category: m.categoria.trim() || "Outros",
-    unit: m.unidade.trim() || "unidade",
-    quantityUsed: m.quantidadeConsumida,
-    currentStock: m.estoqueAtual,
-    minimumStock: m.estoqueMinimo,
-    urgency: m.urgencia || null
-  });
+
+
+
+
+
+
+
+
+
+
 
   const adicionarMaterial = () => {
     const novo: MaterialItem = {
       id: Date.now().toString(),
-      nome: 'Cimento CP-II',
-      categoria: 'Cimento',
+      nome: 'Novo Material',
+      categoria: 'Outros',
       quantidadeConsumida: 0,
-      unidade: 'saco',
-      estoqueAtual: 100,
-      estoqueMinimo: 20,
+      unidade: 'unidade',
+      estoqueAtual: 0,
+      estoqueMinimo: 10,
       reposicao: false,
       urgencia: ''
     };
@@ -77,12 +86,12 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
   };
 
   const atualizarMaterial = (id: string, updates: Partial<MaterialItem>) => {
-    setMateriais(prev => prev.map(m => {
-      if (m.id !== id) return m;
-      const novo = { ...m, ...updates };
-      novo.reposicao = novo.estoqueAtual <= novo.estoqueMinimo;
-      return novo;
-    }));
+    setMateriais(prev => prev.map(m =>
+      m.id === id ? { ...m, ...updates } : m
+    ));
+
+
+
   };
 
   const abrirEdicao = (material: MaterialItem) => {
@@ -118,8 +127,10 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
 
     atualizarMaterial(editandoId, {
       quantidadeConsumida: novoConsumo,
-      estoqueAtual: novoEstoque
+      estoqueAtual: novoEstoque,
+      reposicao: novoEstoque <= material.estoqueMinimo
     });
+
     setEditTemp({ ...editTemp, consumo: 0 });
   };
 
@@ -131,8 +142,11 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
     atualizarMaterial(editandoId, {
       estoqueAtual: material.estoqueAtual + editTemp.adicao
     });
+
     setEditTemp({ ...editTemp, adicao: 0 });
   };
+
+  const materialAtual = materiais.find(m => m.id === editandoId);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md border">
@@ -142,8 +156,12 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
           <h3 className="text-xl font-bold">Materiais Utilizados</h3>
         </div>
         {!isReadOnly && (
-          <button onClick={adicionarMaterial} className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition shadow">
-            <Plus size={18} /> Adicionar Material
+          <button
+            onClick={adicionarMaterial}
+            className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition shadow"
+          >
+            <Plus size={18} />
+            Adicionar Material
           </button>
         )}
       </div>
@@ -155,32 +173,185 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {materiais.map(material => (
-            <div key={material.id} className={`border rounded-xl p-5 shadow-sm transition-all relative ${editandoId === material.id ? 'ring-2 ring-purple-500 bg-purple-50' : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:shadow'}`}>
-              {/* Botões de ação */}
+          {materiais.map((material) => (
+            <div
+              key={material.id}
+              className={`border rounded-xl p-5 shadow-sm transition-all relative ${
+                editandoId === material.id 
+                  ? 'ring-2 ring-blue-500 bg-blue-50' 
+                  : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:shadow'
+              }`}
+            >
               {!isReadOnly && (
                 <div className="absolute top-3 right-3 flex gap-2 z-10">
                   {editandoId !== material.id ? (
-                    <button onClick={() => abrirEdicao(material)} className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 shadow"><Edit3 size={16} /></button>
+                    <button
+                      onClick={() => abrirEdicao(material)}
+                      className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow"
+                    >
+                      <Edit3 size={16} />
+                    </button>
                   ) : (
-                    <button onClick={salvarEdicao} className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow"><Save size={16} /></button>
+                    <button
+                      onClick={salvarEdicao}
+                      className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow"
+                    >
+                      <Save size={16} />
+                    </button>
                   )}
-                  <button onClick={() => removerMaterial(material.id)} className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow"><X size={16} /></button>
+                  <button
+                    onClick={() => removerMaterial(material.id)}
+                    className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow"
+                  >
+                    <X size={16} />
+                  </button>
                 </div>
               )}
 
               {editandoId === material.id ? (
-                // ... seu formulário de edição (mantido igual)
-                // (não preciso repetir tudo aqui, só o mapToDTO e onMateriaisChange importam)
+
+
                 <div className="space-y-4">
-                  {/* seu formulário */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Nome</label>
+                      <input
+                        type="text"
+                        value={editTemp.nome}
+                        onChange={e => setEditTemp({ ...editTemp, nome: e.target.value })}
+                        className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ex: Cimento 50kg"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Categoria</label>
+                      <select
+                        value={editTemp.categoria}
+                        onChange={e => setEditTemp({ ...editTemp, categoria: e.target.value })}
+                        className="w-full p-2 border rounded"
+                      >
+                        <option value="">Selecione</option>
+                        <option>Cimento</option>
+                        <option>Areia</option>
+                        <option>Ferro</option>
+                        <option>Tijolo</option>
+                        <option>Madeira</option>
+                        <option>Elétrica</option>
+                        <option>Hidráulica</option>
+                        <option>Outros</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Unidade</label>
+                      <select
+                        value={editTemp.unidade}
+                        onChange={e => setEditTemp({ ...editTemp, unidade: e.target.value })}
+                        className="w-full p-2 border rounded"
+                      >
+                        <option value="">Selecione</option>
+                        <option>saco</option>
+                        <option>kg</option>
+                        <option>m³</option>
+                        <option>unidade</option>
+                        <option>litro</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Estoque Mínimo</label>
+                      <input
+                        type="number"
+                        value={editTemp.estoqueMinimo}
+                        onChange={e => setEditTemp({ ...editTemp, estoqueMinimo: Number(e.target.value) })}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Adicionar ao Estoque
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          min="1"
+                          placeholder="Qtd"
+                          value={editTemp.adicao || ''}
+                          onChange={e => setEditTemp({ ...editTemp, adicao: Number(e.target.value) })}
+                          className="flex-1 p-2 border rounded"
+                        />
+                        <button
+                          onClick={adicionarEstoque}
+                          disabled={!editTemp.adicao || editTemp.adicao <= 0}
+                          className="px-4 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                        >
+                          <Box size={18} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Consumir do Estoque
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          min="0.1"
+                          step="0.1"
+                          placeholder="Qtd"
+                          value={editTemp.consumo || ''}
+                          onChange={e => setEditTemp({ ...editTemp, consumo: parseFloat(e.target.value) || 0 })}
+                          className="flex-1 p-2 border rounded"
+                        />
+                        <button
+                          onClick={consumir}
+                          disabled={!editTemp.consumo || editTemp.consumo <= 0}
+                          className="px-4 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50"
+                        >
+                          <Package size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                    <p>Consumido: <strong>{material.quantidadeConsumida} {material.unidade}</strong></p>
+                    <p>Estoque atual: <strong className={material.estoqueAtual <= material.estoqueMinimo ? 'text-red-600' : 'text-green-600'}>
+                      {material.estoqueAtual} {material.unidade}
+                    </strong></p>
+                    {material.reposicao && <span className="ml-2 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs">Reposição necessária</span>}
+                  </div>
                 </div>
               ) : (
                 <div>
-                  <p className="font-bold text-gray-800">{material.nome}</p>
-                  <p className="text-sm text-gray-600">{material.categoria} • Consumido: {material.quantidadeConsumida} {material.unidade}</p>
-                  <p className="text-sm">Estoque: <strong className={material.reposicao ? 'text-red-600' : 'text-green-600'}>{material.estoqueAtual}</strong> {material.unidade}</p>
-                  {material.reposicao && <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">Reposição necessária</span>}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                    <div>
+                      <p className="text-xs text-gray-600">Categoria</p>
+                      <p className="font-semibold text-purple-700">{material.categoria || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Material</p>
+                      <p className="font-bold text-gray-800">{material.nome}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600">Consumido</p>
+                      <p className="text-lg font-bold text-orange-600">
+                        {material.quantidadeConsumida} {material.unidade}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Estoque: <strong className={material.estoqueAtual <= material.estoqueMinimo ? 'text-red-600' : 'text-green-600'}>
+                      {material.estoqueAtual}
+                    </strong> {material.unidade}
+                    {material.reposicao && (
+                      <span className="ml-2 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                        Reposição
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

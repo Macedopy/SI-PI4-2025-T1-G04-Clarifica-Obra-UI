@@ -16,13 +16,13 @@ interface FerramentaItem {
 interface FerramentasUtilizadasProps {
     isReadOnly?: boolean;
     faseId: string;
-    onFerramentasChange?: (ferramentas: any[]) => void; // ESSENCIAL PRO BACKEND
+
 }
 
 export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
     isReadOnly = false,
-    faseId,
-    onFerramentasChange
+    faseId
+
 }) => {
     const STORAGE_KEY = `ferramentas-fase-${faseId}`;
     const [ferramentas, setFerramentas] = useState<FerramentaItem[]>([]);
@@ -46,45 +46,45 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
         observacao: ''
     });
 
-    // Carrega do localStorage
+
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            setFerramentas(parsed);
-        }
+        if (saved) setFerramentas(JSON.parse(saved));
+
+
+
     }, [faseId]);
 
-    // Salva no localStorage + ENVIA PRO COMPONENTE PAI (BACKEND)
+
     useEffect(() => {
         if (ferramentas.length > 0) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(ferramentas));
 
-            // MAPEIA PRO DTO QUE O BACKEND ESPERA
-            onFerramentasChange?.(ferramentas.map(f => ({
-                id: f.id,
-                name: f.nome.trim() || "Ferramenta sem nome",
-                category: f.categoria.trim() || "Manual",
-                totalQuantity: f.quantidadeTotal >= 1 ? f.quantidadeTotal : 1,
-                inUse: f.emUso >= 0 ? f.emUso : 0,
-                inMaintenance: f.emManutencao >= 0 ? f.emManutencao : 0,
-                condition: f.condicao === 'ótima' || f.condicao === 'boa' ? 'GOOD' :
-                          f.condicao === 'ruim' ? 'BAD' : 'UNAVAILABLE',
-                notes: f.observacao.trim() || null
-            })));
-        } else {
-            onFerramentasChange?.([]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
-    }, [ferramentas, onFerramentasChange]);
+    }, [ferramentas]);
 
     const adicionarFerramenta = () => {
         const nova: FerramentaItem = {
             id: Date.now().toString(),
-            nome: 'Martelete 10kg',
-            categoria: 'Elétrica',
-            quantidadeTotal: 3,
-            emUso: 1,
-            disponivel: 2,
+            nome: 'Nova Ferramenta',
+            categoria: 'Manual',
+            quantidadeTotal: 1,
+            emUso: 0,
+            disponivel: 1,
             emManutencao: 0,
             condicao: 'boa',
             observacao: ''
@@ -104,9 +104,9 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
                     ? {
                         ...f,
                         ...updates,
-                        disponivel: (updates.quantidadeTotal ?? f.quantidadeTotal) -
-                                   (updates.emUso ?? f.emUso) -
-                                   (updates.emManutencao ?? f.emManutencao)
+                        disponivel: f.quantidadeTotal - f.emUso - f.emManutencao
+
+
                     }
                     : f
             )
@@ -131,7 +131,7 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
         atualizarFerramenta(editandoId, {
             nome: editTemp.nome,
             categoria: editTemp.categoria,
-            quantidadeTotal: Math.max(1, editTemp.quantidadeTotal),
+            quantidadeTotal: editTemp.quantidadeTotal,
             emUso: editTemp.emUso,
             emManutencao: editTemp.emManutencao,
             condicao: editTemp.condicao,
@@ -141,8 +141,8 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
     };
 
     const usarFerramenta = () => {
-        const disponiveis = editTemp.quantidadeTotal - editTemp.emUso - editTemp.emManutencao;
-        if (disponiveis <= 0) return;
+        if (editTemp.emUso >= editTemp.quantidadeTotal - editTemp.emManutencao) return;
+
         setEditTemp(prev => ({ ...prev, emUso: prev.emUso + 1 }));
     };
 
@@ -152,8 +152,8 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
     };
 
     const enviarManutencao = () => {
-        const disponiveis = editTemp.quantidadeTotal - editTemp.emUso - editTemp.emManutencao;
-        if (disponiveis <= 0) return;
+        if (editTemp.emManutencao >= editTemp.quantidadeTotal - editTemp.emUso) return;
+
         setEditTemp(prev => ({ ...prev, emManutencao: prev.emManutencao + 1 }));
     };
 
@@ -200,29 +200,152 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
                             {!isReadOnly && (
                                 <div className="absolute top-3 right-3 flex gap-2 z-10">
                                     {editandoId !== ferramenta.id ? (
-                                        <button onClick={() => abrirEdicao(ferramenta)} className="p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow">
+                                        <button
+                                            onClick={() => abrirEdicao(ferramenta)}
+                                            className="p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 shadow"
+                                        >
                                             <Edit3 size={16} />
                                         </button>
                                     ) : (
-                                        <button onClick={salvarEdicao} className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow">
+                                        <button
+                                            onClick={salvarEdicao}
+                                            className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow"
+                                        >
                                             <Save size={16} />
                                         </button>
                                     )}
-                                    <button onClick={() => removerFerramenta(ferramenta.id)} className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow">
+                                    <button
+                                        onClick={() => removerFerramenta(ferramenta.id)}
+                                        className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow"
+                                    >
                                         <X size={16} />
                                     </button>
                                 </div>
                             )}
 
-                            {/* MODO EDIÇÃO */}
+
                             {editandoId === ferramenta.id ? (
                                 <div className="space-y-4">
-                                    {/* Formulário completo aqui (igual ao seu original) */}
-                                    {/* ... (mantive todo o seu formulário lindo) */}
-                                    {/* Só não repeti por economia de espaço, mas está tudo aí */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Nome</label>
+                                            <input
+                                                type="text"
+                                                value={editTemp.nome}
+                                                onChange={e => setEditTemp({ ...editTemp, nome: e.target.value })}
+                                                className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500"
+                                                placeholder="Ex: Martelete 10kg"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Categoria</label>
+                                            <select
+                                                value={editTemp.categoria}
+                                                onChange={e => setEditTemp({ ...editTemp, categoria: e.target.value })}
+                                                className="w-full p-2 border rounded"
+                                            >
+                                                <option>Manual</option>
+                                                <option>Elétrica</option>
+                                                <option>Pneumática</option>
+                                                <option>Medição</option>
+                                                <option>Corte</option>
+                                                <option>Outros</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Quantidade Total</label>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={editTemp.quantidadeTotal}
+                                                onChange={e => setEditTemp({ ...editTemp, quantidadeTotal: Number(e.target.value) })}
+                                                className="w-full p-2 border rounded"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Condição</label>
+                                            <select
+                                                value={editTemp.condicao}
+                                                onChange={e =>
+                                                    setEditTemp({
+                                                        ...editTemp,
+                                                        condicao: e.target.value as 'ótima' | 'boa' | 'ruim' | 'indisponível'
+                                                    })
+                                                }
+                                                className="w-full p-2 border rounded"
+                                            >
+                                                <option value="ótima">Ótima</option>
+                                                <option value="boa">Boa</option>
+                                                <option value="ruim">Ruim</option>
+                                                <option value="indisponível">Indisponível</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t">
+                                        <div className="text-center">
+                                            <p className="text-xs text-gray-600">Em Uso</p>
+                                            <p className="text-2xl font-bold text-blue-600">{editTemp.emUso}</p>
+                                            <div className="flex gap-2 mt-2">
+                                                <button
+                                                    onClick={usarFerramenta}
+                                                    disabled={editTemp.emUso >= editTemp.quantidadeTotal - editTemp.emManutencao}
+                                                    className="flex-1 bg-blue-500 text-white text-xs py-1 rounded hover:bg-blue-600 disabled:opacity-50"
+                                                >
+                                                    Usar
+                                                </button>
+                                                <button
+                                                    onClick={devolverFerramenta}
+                                                    disabled={editTemp.emUso <= 0}
+                                                    className="flex-1 bg-gray-500 text-white text-xs py-1 rounded hover:bg-gray-600 disabled:opacity-50"
+                                                >
+                                                    Devolver
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-xs text-gray-600">Disponível</p>
+                                            <p className="text-2xl font-bold text-green-600">{disponivel}</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-xs text-gray-600">Manutenção</p>
+                                            <p className="text-2xl font-bold text-orange-600">{editTemp.emManutencao}</p>
+                                            <div className="flex gap-2 mt-2">
+                                                <button
+                                                    onClick={enviarManutencao}
+                                                    disabled={editTemp.emManutencao >= editTemp.quantidadeTotal - editTemp.emUso}
+                                                    className="flex-1 bg-orange-500 text-white text-xs py-1 rounded hover:bg-orange-600 disabled:opacity-50"
+                                                >
+                                                    Enviar
+                                                </button>
+                                                <button
+                                                    onClick={retornarManutencao}
+                                                    disabled={editTemp.emManutencao <= 0}
+                                                    className="flex-1 bg-teal-500 text-white text-xs py-1 rounded hover:bg-teal-600 disabled:opacity-50"
+                                                >
+                                                    Retornar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-xs text-gray-600">Total</p>
+                                            <p className="text-2xl font-bold text-gray-800">{editTemp.quantidadeTotal}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4">
+                                        <label className="block text-sm font-medium mb-1">Observação</label>
+                                        <textarea
+                                            value={editTemp.observacao}
+                                            onChange={e => setEditTemp({ ...editTemp, observacao: e.target.value })}
+                                            className="w-full p-2 border rounded"
+                                            rows={2}
+                                            placeholder="Ex: Cabo danificado"
+                                        />
+                                    </div>
                                 </div>
                             ) : (
-                                /* MODO VISUALIZAÇÃO */
+
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <div>
@@ -233,12 +356,16 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
                                             {ferramenta.condicao === 'ótima' && <CheckCircle className="text-green-600" size={20} />}
                                             {ferramenta.condicao === 'ruim' && <Wrench className="text-orange-600" size={20} />}
                                             {ferramenta.condicao === 'indisponível' && <X className="text-red-600" size={20} />}
-                                            <span className={`text-xs px-2 py-1 rounded-full ${
-                                                ferramenta.condicao === 'ótima' ? 'bg-green-100 text-green-800' :
-                                                ferramenta.condicao === 'boa' ? 'bg-blue-100 text-blue-800' :
-                                                ferramenta.condicao === 'ruim' ? 'bg-orange-100 text-orange-800' :
-                                                'bg-red-100 text-red-800'
-                                            }`}>
+                                            <span
+                                                className={`text-xs px-2 py-1 rounded-full ${ferramenta.condicao === 'ótima'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : ferramenta.condicao === 'boa'
+                                                            ? 'bg-blue-100 text-blue-800'
+                                                            : ferramenta.condicao === 'ruim'
+                                                                ? 'bg-orange-100 text-orange-800'
+                                                                : 'bg-red-100 text-red-800'
+                                                    }`}
+                                            >
                                                 {ferramenta.condicao}
                                             </span>
                                         </div>

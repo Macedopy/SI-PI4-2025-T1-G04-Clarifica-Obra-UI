@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Users, X, Plus, Edit3, Save, Clock, UserCheck, UserX, Coffee } from 'lucide-react';
 
-interface MembroEquipe {
+interface TeamMember {
   id: string;
-  nome: string;
-  funcao: string;
+  name: string;
+  role: string;
   cpf: string;
-  horasTrabalhadas: number;
-  status: 'presente' | 'ausente' | 'folga';
+  hoursWorked: number;
+  status: 'PRESENT' | 'ABSENT' | 'ON_LEAVE';
   avatar: string;
-  observacao: string;
+  notes: string;
 }
 
 interface EquipeUtilizadaProps {
   isReadOnly?: boolean;
   faseId: string;
-  onEquipeChange?: (equipe: any[]) => void;
+  onEquipeChange?: (equipe: TeamMember[]) => void;
 }
 
 export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
@@ -24,105 +24,93 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
   onEquipeChange,
 }) => {
   const STORAGE_KEY = `equipe-fase-${faseId}`;
-  const [membros, setMembros] = useState<MembroEquipe[]>([]);
-  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [editTemp, setEditTemp] = useState({
-    nome: '',
-    funcao: '',
+    name: '',
+    role: '',
     cpf: '',
-    horasTrabalhadas: 0,
-    status: 'presente' as 'presente' | 'ausente' | 'folga',
-    observacao: '',
+    hoursWorked: 0,
+    status: 'PRESENT' as 'PRESENT' | 'ABSENT' | 'ON_LEAVE',
+    notes: '',
   });
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      const parsed = JSON.parse(saved) as MembroEquipe[];
-      setMembros(parsed);
-      onEquipeChange?.(parsed.map(mapToDTO));
+      const parsed = JSON.parse(saved) as TeamMember[];
+      setMembers(parsed);
+      onEquipeChange?.(parsed);
     }
   }, [faseId]);
 
   useEffect(() => {
-    if (membros.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(membros));
-      onEquipeChange?.(membros.map(mapToDTO));
+    if (members.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+      onEquipeChange?.(members);
     }
-  }, [membros]);
+  }, [members]);
 
-  const mapToDTO = (m: MembroEquipe) => ({
-    name: m.nome.trim() || 'Membro sem nome',
-    role: m.funcao.trim() || 'Não informado',
-    cpf: m.cpf.trim() || null,
-    hoursWorked: Number(m.horasTrabalhadas) || 0,
-    status:
-      m.status === 'presente' ? 'PRESENT' :
-      m.status === 'ausente' ? 'ABSENT' :
-      'ON_LEAVE',
-    notes: m.observacao.trim() || null,
-  });
-
-  const adicionarMembro = () => {
-    const novo: MembroEquipe = {
+  const addMember = () => {
+    const newMember: TeamMember = {
       id: Date.now().toString(),
-      nome: 'Novo Membro',
-      funcao: 'Ajudante',
+      name: 'New Member',
+      role: 'Helper',
       cpf: '',
-      horasTrabalhadas: 8,
-      status: 'presente',
+      hoursWorked: 8,
+      status: 'PRESENT',
       avatar: '',
-      observacao: '',
+      notes: '',
     };
-    setMembros((prev) => [...prev, novo]);
+    setMembers((prev) => [...prev, newMember]);
   };
 
-  const removerMembro = (id: string) => {
-    setMembros((prev) => prev.filter((m) => m.id !== id));
-    setEditandoId(null);
+  const removeMember = (id: string) => {
+    setMembers((prev) => prev.filter((m) => m.id !== id));
+    setEditingId(null);
   };
 
-  const atualizarMembro = (id: string, updates: Partial<MembroEquipe>) => {
-    setMembros((prev) => prev.map((m) => (m.id === id ? { ...m, ...updates } : m)));
+  const updateMember = (id: string, updates: Partial<TeamMember>) => {
+    setMembers((prev) => prev.map((m) => (m.id === id ? { ...m, ...updates } : m)));
   };
 
-  const abrirEdicao = (membro: MembroEquipe) => {
-    setEditandoId(membro.id);
+  const openEdit = (member: TeamMember) => {
+    setEditingId(member.id);
     setEditTemp({
-      nome: membro.nome,
-      funcao: membro.funcao,
-      cpf: membro.cpf,
-      horasTrabalhadas: membro.horasTrabalhadas,
-      status: membro.status,
-      observacao: membro.observacao,
+      name: member.name,
+      role: member.role,
+      cpf: member.cpf,
+      hoursWorked: member.hoursWorked,
+      status: member.status,
+      notes: member.notes,
     });
   };
 
-  const salvarEdicao = () => {
-    if (!editandoId) return;
-    atualizarMembro(editandoId, editTemp);
-    setEditandoId(null);
+  const saveEdit = () => {
+    if (!editingId) return;
+    updateMember(editingId, editTemp);
+    setEditingId(null);
   };
 
-  const getStatusIcon = (status: 'presente' | 'ausente' | 'folga') => {
+  const getStatusIcon = (status: 'PRESENT' | 'ABSENT' | 'ON_LEAVE') => {
     switch (status) {
-      case 'presente':
+      case 'PRESENT':
         return <UserCheck className="text-green-600" size={18} />;
-      case 'ausente':
+      case 'ABSENT':
         return <UserX className="text-red-600" size={18} />;
-      case 'folga':
+      case 'ON_LEAVE':
         return <Coffee className="text-orange-600" size={18} />;
     }
   };
 
-  const getStatusColor = (status: 'presente' | 'ausente' | 'folga') => {
+  const getStatusColor = (status: 'PRESENT' | 'ABSENT' | 'ON_LEAVE') => {
     switch (status) {
-      case 'presente':
+      case 'PRESENT':
         return 'bg-green-100 text-green-800';
-      case 'ausente':
+      case 'ABSENT':
         return 'bg-red-100 text-red-800';
-      case 'folga':
+      case 'ON_LEAVE':
         return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -138,7 +126,7 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
         </div>
         {!isReadOnly && (
           <button
-            onClick={adicionarMembro}
+            onClick={addMember}
             className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow"
           >
             <Plus size={18} />
@@ -147,41 +135,41 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
         )}
       </div>
 
-      {membros.length === 0 ? (
+      {members.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
           <Users size={48} className="mx-auto mb-3 text-gray-300" />
           <p>Nenhum membro adicionado ainda.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {membros.map((membro) => (
+          {members.map((member) => (
             <div
-              key={membro.id}
+              key={member.id}
               className={`border rounded-xl p-5 shadow-sm transition-all relative ${
-                editandoId === membro.id
+                editingId === member.id
                   ? 'ring-2 ring-indigo-500 bg-indigo-50'
                   : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:shadow'
               }`}
             >
               {!isReadOnly && (
                 <div className="absolute top-3 right-3 flex gap-2 z-10">
-                  {editandoId !== membro.id ? (
+                  {editingId !== member.id ? (
                     <button
-                      onClick={() => abrirEdicao(membro)}
+                      onClick={() => openEdit(member)}
                       className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow"
                     >
                       <Edit3 size={16} />
                     </button>
                   ) : (
                     <button
-                      onClick={salvarEdicao}
+                      onClick={saveEdit}
                       className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow"
                     >
                       <Save size={16} />
                     </button>
                   )}
                   <button
-                    onClick={() => removerMembro(membro.id)}
+                    onClick={() => removeMember(member.id)}
                     className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow"
                   >
                     <X size={16} />
@@ -189,7 +177,7 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
                 </div>
               )}
 
-              {editandoId === membro.id ? (
+              {editingId === member.id ? (
                 <div className="space-y-3">
                   <div className="flex justify-center mb-3">
                     <div className="w-20 h-20 bg-gray-200 border-2 border-dashed rounded-full flex items-center justify-center">
@@ -198,15 +186,15 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
                   </div>
                   <input
                     type="text"
-                    value={editTemp.nome}
-                    onChange={(e) => setEditTemp({ ...editTemp, nome: e.target.value })}
+                    value={editTemp.name}
+                    onChange={(e) => setEditTemp({ ...editTemp, name: e.target.value })}
                     className="w-full p-2 border rounded text-center font-bold"
                     placeholder="Nome completo"
                   />
                   <input
                     type="text"
-                    value={editTemp.funcao}
-                    onChange={(e) => setEditTemp({ ...editTemp, funcao: e.target.value })}
+                    value={editTemp.role}
+                    onChange={(e) => setEditTemp({ ...editTemp, role: e.target.value })}
                     className="w-full p-2 border rounded text-center text-sm"
                     placeholder="Função"
                   />
@@ -223,8 +211,8 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
                       type="number"
                       min="0"
                       step="0.5"
-                      value={editTemp.horasTrabalhadas}
-                      onChange={(e) => setEditTemp({ ...editTemp, horasTrabalhadas: Number(e.target.value) })}
+                      value={editTemp.hoursWorked}
+                      onChange={(e) => setEditTemp({ ...editTemp, hoursWorked: Number(e.target.value) })}
                       className="flex-1 p-2 border rounded text-center font-bold text-blue-600"
                     />
                     <span className="text-sm">h</span>
@@ -232,17 +220,17 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
                   <select
                     value={editTemp.status}
                     onChange={(e) =>
-                      setEditTemp({ ...editTemp, status: e.target.value as 'presente' | 'ausente' | 'folga' })
+                      setEditTemp({ ...editTemp, status: e.target.value as 'PRESENT' | 'ABSENT' | 'ON_LEAVE' })
                     }
                     className="w-full p-2 border rounded"
                   >
-                    <option value="presente">Presente</option>
-                    <option value="ausente">Ausente</option>
-                    <option value="folga">Folga</option>
+                    <option value="PRESENT">Presente</option>
+                    <option value="ABSENT">Ausente</option>
+                    <option value="ON_LEAVE">Folga</option>
                   </select>
                   <textarea
-                    value={editTemp.observacao}
-                    onChange={(e) => setEditTemp({ ...editTemp, observacao: e.target.value })}
+                    value={editTemp.notes}
+                    onChange={(e) => setEditTemp({ ...editTemp, notes: e.target.value })}
                     className="w-full p-2 border rounded text-xs"
                     rows={2}
                     placeholder="Observação"
@@ -252,31 +240,31 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
                 <div>
                   <div className="flex flex-col items-center mb-3">
                     <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                      {membro.nome
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')
-                        .toUpperCase()
-                        .slice(0, 2)}
+{(member.name || '')
+  .split(' ')
+  .map((n) => n[0])
+  .join('')
+  .toUpperCase()
+  .slice(0, 2)}
                     </div>
-                    <p className="font-bold text-gray-800 mt-2">{membro.nome}</p>
-                    <p className="text-sm text-gray-600">{membro.funcao}</p>
-                    {membro.cpf && <p className="text-xs text-gray-500">{membro.cpf}</p>}
+                    <p className="font-bold text-gray-800 mt-2">{member.name}</p>
+                    <p className="text-sm text-gray-600">{member.role}</p>
+                    {member.cpf && <p className="text-xs text-gray-500">{member.cpf}</p>}
                   </div>
                   <div className="space-y-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <Clock className="text-blue-600" size={16} />
-                      <span className="font-bold text-blue-600">{membro.horasTrabalhadas}h</span>
+                      <span className="font-bold text-blue-600">{member.hoursWorked}h</span>
                     </div>
                     <div className="flex items-center justify-center gap-2">
-                      {getStatusIcon(membro.status)}
-                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(membro.status)}`}>
-                        {membro.status.charAt(0).toUpperCase() + membro.status.slice(1)}
+                      {getStatusIcon(member.status)}
+                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(member.status)}`}>
+                        {member.status.charAt(0).toUpperCase() + member.status.slice(1).toLowerCase()}
                       </span>
                     </div>
                   </div>
-                  {membro.observacao && (
-                    <p className="text-xs text-gray-500 mt-3 italic text-center">"{membro.observacao}"</p>
+                  {member.notes && (
+                    <p className="text-xs text-gray-500 mt-3 italic text-center">"{member.notes}"</p>
                   )}
                 </div>
               )}
