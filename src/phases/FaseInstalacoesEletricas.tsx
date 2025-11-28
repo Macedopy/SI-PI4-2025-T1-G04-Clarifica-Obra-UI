@@ -17,7 +17,7 @@ export const FaseInstalacoesEletricas = () => {
   const handleSave = async (dados: any) => {
     const payload = { phaseName: "Instalações Elétricas", contractor: "Construtora Clarifica", ...dados };
     try {
-      const res = await fetch("http://localhost:8080/electrical", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const res = await fetch("http://localhost:8080/eletric", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       alert(res.ok ? "Relatório Elétrico enviado!" : "Erro");
     } catch { alert("Falha na conexão"); }
   };
