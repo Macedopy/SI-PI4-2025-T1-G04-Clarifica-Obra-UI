@@ -15,7 +15,6 @@ const fases = [
   { id: "instalacoes-eletricas", nome: "Inst. Elétricas", icon: Wrench },
   { id: "revestimentos", nome: "Revestimentos", icon: Package },
   { id: "acabamentos", nome: "Acabamentos", icon: Package },
-  { id: "finalizacao", nome: "Finalização", icon: CheckCircle },
 ] as const;
 
 export const PhasesBreadcrumb = () => {

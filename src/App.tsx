@@ -12,7 +12,6 @@ import { FaseInstalacoesHidraulicas } from "./phases/FaseInstalacoesHidraulicas"
 import { FaseInstalacoesEletricas } from "./phases/FaseInstalacoesEletricas";
 import { FaseRevestimentos } from "./phases/FaseRevestimentos";
 import { FaseAcabamentos } from "./phases/FaseAcabamentos";
-import { FaseFinalizacao } from "./phases/FaseFinalizacao";
 import { ObraProvider } from "./contexts/ObraContext";
 import { usePhaseNavigation, PhasesProvider } from "./contexts/PhasesContext";
 
@@ -26,7 +25,6 @@ const phaseComponents: Record<string, React.FC> = {
   "instalacoes-eletricas": FaseInstalacoesEletricas,
   revestimentos: FaseRevestimentos,
   acabamentos: FaseAcabamentos,
-  finalizacao: FaseFinalizacao,
 };
 
 // === COMPONENTE QUE MOSTRA A FASE ATUAL ===

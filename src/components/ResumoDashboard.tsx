@@ -22,7 +22,6 @@ export const ResumoDashboard = ({ isReadOnly = false }: ResumoDashboardProps) =>
     { nome: "Inst. Elétricas", progresso: 0 },
     { nome: "Revestimentos", progresso: 0 },
     { nome: "Acabamentos", progresso: 0 },
-    { nome: "Finalização", progresso: 0 },
   ];
 
   const handleEnviarRelatorioFinal = () => {
