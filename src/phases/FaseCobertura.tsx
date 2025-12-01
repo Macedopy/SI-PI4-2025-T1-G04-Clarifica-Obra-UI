@@ -3,6 +3,7 @@ import { Camera, Hammer, Package, Truck, Users, Wrench } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";
 import { SecaoConteudo } from "../components/SecaoConteudo";
 import { useUserType } from "../contexts/UserTypeContext";
+import { usePhasesData } from "../contexts/PhasesContext";
 
 const secoes = [
   { id: "equipe", nome: "Equipe", icon: Users },
@@ -15,6 +16,12 @@ const secoes = [
 
 export const FaseCobertura = () => {
   const { customerId } = useUserType();
+  const { phasesData, loading, error } = usePhasesData();
+
+  if (loading) return <div>Carregando dados da fase...</div>;
+  if (error) return <div>{error}</div>;
+
+  const initialData = phasesData['cobertura'];
 
   const handleSave = async (dados: any) => {
     const payload = {
@@ -53,13 +60,14 @@ export const FaseCobertura = () => {
     <PhaseLayout
       phase={{ id: "cobertura", nome: "Cobertura", icon: Package, secoes }}
       onSave={handleSave}
+      initialData={initialData}
     >
-      <SecaoConteudo secaoId="equipe" faseId="cobertura" />
-      <SecaoConteudo secaoId="servicos" faseId="cobertura" />
-      <SecaoConteudo secaoId="maquinarios" faseId="cobertura" />
-      <SecaoConteudo secaoId="materiais" faseId="cobertura" />
-      <SecaoConteudo secaoId="ferramentas" faseId="cobertura" />
-      <SecaoConteudo secaoId="fotos" faseId="cobertura" />
+      <SecaoConteudo secaoId="equipe" faseId="cobertura" initialData={initialData?.equipe} />
+      <SecaoConteudo secaoId="servicos" faseId="cobertura" initialData={initialData?.servicos} />
+      <SecaoConteudo secaoId="maquinarios" faseId="cobertura" initialData={initialData?.maquinarios} />
+      <SecaoConteudo secaoId="materiais" faseId="cobertura" initialData={initialData?.materiais} />
+      <SecaoConteudo secaoId="ferramentas" faseId="cobertura" initialData={initialData?.ferramentas} />
+      <SecaoConteudo secaoId="fotos" faseId="cobertura" initialData={initialData?.fotos} />
     </PhaseLayout>
   );
 };

@@ -39,7 +39,7 @@ const AppContent = () => {
     return <Login />;
   }
 
-  const CurrentPhaseComponent = phaseComponents[currentPhaseId] || FasePreparacaoTerreno;
+  const CurrentPhaseComponent = phaseComponents[currentPhaseId ?? 0] || FasePreparacaoTerreno;
 
   return (
     <div className="min-h-screen bg-gray-50">

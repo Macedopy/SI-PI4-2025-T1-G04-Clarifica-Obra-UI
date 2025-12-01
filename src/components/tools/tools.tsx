@@ -15,11 +15,13 @@ interface ToolItem {
 interface FerramentasUtilizadasProps {
     isReadOnly?: boolean;
     faseId: string;
+    initialData?: any;
 }
 
 export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
     isReadOnly = false,
-    faseId
+    faseId,
+    initialData
 }) => {
     const STORAGE_KEY = `ferramentas-fase-${faseId}`;
     const [ferramentas, setFerramentas] = useState<ToolItem[]>([]);
@@ -36,9 +38,13 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
     });
 
     useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) setFerramentas(JSON.parse(saved));
-    }, [faseId]);
+        if (initialData && initialData.length > 0) {
+            setFerramentas(initialData);
+        } else {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) setFerramentas(JSON.parse(saved));
+        }
+    }, [faseId, initialData]);
 
     useEffect(() => {
         if (ferramentas.length > 0) {

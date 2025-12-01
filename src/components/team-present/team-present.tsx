@@ -16,12 +16,14 @@ interface EquipeUtilizadaProps {
   isReadOnly?: boolean;
   faseId: string;
   onEquipeChange?: (equipe: TeamMember[]) => void;
+  initialData?: TeamMember[];
 }
 
 export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
   isReadOnly = false,
   faseId,
   onEquipeChange,
+  initialData,
 }) => {
   const STORAGE_KEY = `equipe-fase-${faseId}`;
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -37,13 +39,18 @@ export const EquipeUtilizada: React.FC<EquipeUtilizadaProps> = ({
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved) as TeamMember[];
-      setMembers(parsed);
-      onEquipeChange?.(parsed);
+    if (initialData && initialData.length > 0) {
+      setMembers(initialData);
+      onEquipeChange?.(initialData);
+    } else {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as TeamMember[];
+        setMembers(parsed);
+        onEquipeChange?.(parsed);
+      }
     }
-  }, [faseId]);
+  }, [faseId, initialData]);
 
   useEffect(() => {
     if (members.length > 0) {

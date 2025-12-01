@@ -16,11 +16,13 @@ interface MaterialItem {
 interface MateriaisUtilizadosProps {
   isReadOnly?: boolean;
   faseId: string;
+  initialData?: MaterialItem[];
 }
 
 export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({ 
   isReadOnly = false, 
-  faseId 
+  faseId,
+  initialData
 }) => {
   const STORAGE_KEY = `materiais-fase-${faseId}`;
   const [materiais, setMateriais] = useState<MaterialItem[]>([]);
@@ -43,11 +45,15 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      setMateriais(JSON.parse(saved));
+    if (initialData && initialData.length > 0) {
+      setMateriais(initialData);
+    } else {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setMateriais(JSON.parse(saved));
+      }
     }
-  }, [faseId]);
+  }, [faseId, initialData]);
 
   useEffect(() => {
     if (materiais.length > 0) {

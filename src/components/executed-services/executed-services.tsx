@@ -15,11 +15,13 @@ interface Servico {
 interface ServicosExecutadosProps {
   isReadOnly?: boolean;
   faseId: string;
+  initialData?: any;
 }
 
 export const ServicosExecutados: React.FC<ServicosExecutadosProps> = ({
   isReadOnly = false,
-  faseId
+  faseId,
+  initialData
 }) => {
   const STORAGE_KEY = `servicos-fase-${faseId}`;
   const [servicos, setServicos] = useState<Servico[]>([]);
@@ -43,9 +45,13 @@ export const ServicosExecutados: React.FC<ServicosExecutadosProps> = ({
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setServicos(JSON.parse(saved));
-  }, [faseId]);
+    if (initialData && initialData.length > 0) {
+      setServicos(initialData);
+    } else {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setServicos(JSON.parse(saved));
+    }
+  }, [faseId, initialData]);
 
   useEffect(() => {
     if (servicos.length > 0) {

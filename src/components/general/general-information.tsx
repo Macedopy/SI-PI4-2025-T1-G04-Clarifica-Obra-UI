@@ -13,11 +13,13 @@ interface InfoGeral {
 interface InformacoesGeraisProps {
   isReadOnly?: boolean;
   faseId: string;
+  initialData?: InfoGeral;
 }
 
 export const InformacoesGerais: React.FC<InformacoesGeraisProps> = ({
   isReadOnly = false,
-  faseId
+  faseId,
+  initialData
 }) => {
   const STORAGE_KEY = `info-geral-fase-${faseId}`;
   const [editando, setEditando] = useState(false);
@@ -31,12 +33,16 @@ export const InformacoesGerais: React.FC<InformacoesGeraisProps> = ({
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setInfo({ ...info, ...parsed });
+    if (initialData) {
+      setInfo(initialData);
+    } else {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setInfo({ ...info, ...parsed });
+      }
     }
-  }, [faseId]);
+  }, [faseId, initialData]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
@@ -128,7 +134,7 @@ export const InformacoesGerais: React.FC<InformacoesGeraisProps> = ({
                 onChange={e => setInfo({ ...info, topografia: e.target.value as any })}
                 className="w-full p-2 border rounded mt-1 focus:ring-2 focus:ring-cyan-500"
               >
-                <option value="plano">plano</option>
+                <option value="plano">Plano</option>
                 <option value="inclinado">Inclinado</option>
                 <option value="colinoso">Colinoso</option>
                 <option value="montanhoso">Montanhoso</option>

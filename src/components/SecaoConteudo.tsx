@@ -11,10 +11,10 @@ interface SecaoConteudoProps {
   secaoId: string;
   faseId: string;
   isReadOnly?: boolean;
+  initialData?: any;
 }
 
-export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false }: SecaoConteudoProps) => {
-  // Seções especiais
+export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false, initialData }: SecaoConteudoProps) => {
   if (secaoId === "fotos") {
     return (
       <div className="space-y-6">
@@ -93,27 +93,25 @@ export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false }: SecaoCont
     );
   }
 
-  // Seções dinâmicas com componentes específicos
   if (secaoId === "materiais") {
-    return <MateriaisUtilizados isReadOnly={isReadOnly} faseId={faseId} />;
+    return <MateriaisUtilizados isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
   }
   if (secaoId === "ferramentas") {
-    return <FerramentasUtilizadas isReadOnly={isReadOnly} faseId={faseId} />;
+    return <FerramentasUtilizadas isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
   }
   if (secaoId === "maquinarios") {
-    return <MaquinariosUtilizados isReadOnly={isReadOnly} faseId={faseId} />;
+    return <MaquinariosUtilizados isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
   }
   if (secaoId === "equipe") {
-    return <EquipeUtilizada isReadOnly={isReadOnly} faseId={faseId} />;
+    return <EquipeUtilizada isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
   }
   if (secaoId === "servicos") {
-    return <ServicosExecutados isReadOnly={isReadOnly} faseId={faseId} />;
+    return <ServicosExecutados isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
   }
   if (secaoId === "geral") {
-    return <InformacoesGerais isReadOnly={isReadOnly} faseId={faseId} />;
+    return <InformacoesGerais isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
   }
 
-  // Caso genérico (campos de checklist)
   const camposMock: string[] = {
     equipe: ["Engenheiro", "Mestre de obras", "Pedreiro", "Ajudante"],
     servicos: ["Escavação", "Armação", "Concretagem"],

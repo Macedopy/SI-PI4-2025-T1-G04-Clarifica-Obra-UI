@@ -3,6 +3,7 @@ import { Calendar, Users, Wrench, Truck, Package, Camera } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";
 import { SecaoConteudo } from "../components/SecaoConteudo";
 import { useUserType } from "../contexts/UserTypeContext";
+import { usePhasesData } from "../contexts/PhasesContext";
 
 const secoes = [
   { id: "geral", nome: "Informações Gerais", icon: Calendar },
@@ -15,6 +16,12 @@ const secoes = [
 
 export const FasePreparacaoTerreno = () => {
   const { customerId } = useUserType();
+  const { phasesData, loading, error } = usePhasesData();
+
+  if (loading) return <div>Carregando dados da fase...</div>;
+  if (error) return <div>{error}</div>;
+
+  const initialData = phasesData['preparacao'];
 
   const handleSave = async (dados: any) => {
     const payload = {
@@ -53,13 +60,14 @@ export const FasePreparacaoTerreno = () => {
     <PhaseLayout
       phase={{ id: "preparacao", nome: "Preparação do Terreno", icon: Calendar, secoes }}
       onSave={handleSave}
+      initialData={initialData}
     >
-      <SecaoConteudo secaoId="geral" faseId="preparacao" />
-      <SecaoConteudo secaoId="equipe" faseId="preparacao" />
-      <SecaoConteudo secaoId="servicos" faseId="preparacao" />
-      <SecaoConteudo secaoId="maquinarios" faseId="preparacao" />
-      <SecaoConteudo secaoId="materiais" faseId="preparacao" />
-      <SecaoConteudo secaoId="fotos" faseId="preparacao" />
+      <SecaoConteudo secaoId="geral" faseId="preparacao" initialData={initialData?.geral} />
+      <SecaoConteudo secaoId="equipe" faseId="preparacao" initialData={initialData?.equipe} />
+      <SecaoConteudo secaoId="servicos" faseId="preparacao" initialData={initialData?.servicos} />
+      <SecaoConteudo secaoId="maquinarios" faseId="preparacao" initialData={initialData?.maquinarios} />
+      <SecaoConteudo secaoId="materiais" faseId="preparacao" initialData={initialData?.materiais} />
+      <SecaoConteudo secaoId="fotos" faseId="preparacao" initialData={initialData?.fotos} />
     </PhaseLayout>
   );
 };

@@ -1,9 +1,9 @@
+// src/phases/FaseAcabamentos.tsx
 import { Camera, Hammer, Package, Truck, Users, Wrench } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";
 import { SecaoConteudo } from "../components/SecaoConteudo";
 import { useUserType } from "../contexts/UserTypeContext";
-
-// src/phases/FaseAcabamentos.tsx
+import { usePhasesData } from "../contexts/PhasesContext";
 
 const secoes = [
   { id: "equipe", nome: "Equipe", icon: Users },
@@ -16,6 +16,12 @@ const secoes = [
 
 export const FaseAcabamentos = () => {
   const { customerId } = useUserType();
+  const { phasesData, loading, error } = usePhasesData();
+
+  if (loading) return <div>Carregando dados da fase...</div>;
+  if (error) return <div>{error}</div>;
+
+  const initialData = phasesData['acabamentos'];
 
   const handleSave = async (dados: any) => {
     const payload = { phaseName: "Acabamentos Finais", contractor: "Construtora Clarifica", ...dados };
@@ -26,13 +32,13 @@ export const FaseAcabamentos = () => {
   };
 
   return (
-    <PhaseLayout phase={{ id: "acabamentos", nome: "Acabamentos", icon: Package, secoes }} onSave={handleSave}>
-      <SecaoConteudo secaoId="equipe" faseId="acabamentos" />
-      <SecaoConteudo secaoId="servicos" faseId="acabamentos" />
-      <SecaoConteudo secaoId="maquinarios" faseId="acabamentos" />
-      <SecaoConteudo secaoId="materiais" faseId="acabamentos" />
-      <SecaoConteudo secaoId="ferramentas" faseId="acabamentos" />
-      <SecaoConteudo secaoId="fotos" faseId="acabamentos" />
+    <PhaseLayout phase={{ id: "acabamentos", nome: "Acabamentos", icon: Package, secoes }} onSave={handleSave} initialData={initialData}>
+      <SecaoConteudo secaoId="equipe" faseId="acabamentos" initialData={initialData?.equipe} />
+      <SecaoConteudo secaoId="servicos" faseId="acabamentos" initialData={initialData?.servicos} />
+      <SecaoConteudo secaoId="maquinarios" faseId="acabamentos" initialData={initialData?.maquinarios} />
+      <SecaoConteudo secaoId="materiais" faseId="acabamentos" initialData={initialData?.materiais} />
+      <SecaoConteudo secaoId="ferramentas" faseId="acabamentos" initialData={initialData?.ferramentas} />
+      <SecaoConteudo secaoId="fotos" faseId="acabamentos" initialData={initialData?.fotos} />
     </PhaseLayout>
   );
 };

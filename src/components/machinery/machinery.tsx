@@ -18,11 +18,13 @@ interface MachineryItem {
 interface MaquinariosUtilizadosProps {
     isReadOnly?: boolean;
     faseId: string;
+    initialData?: any;
 }
 
 export const MaquinariosUtilizados: React.FC<MaquinariosUtilizadosProps> = ({
     isReadOnly = false,
-    faseId
+    faseId,
+    initialData
 }) => {
     const STORAGE_KEY = `maquinarios-fase-${faseId}`;
     const [maquinarios, setMaquinarios] = useState<MachineryItem[]>([]);
@@ -41,9 +43,13 @@ export const MaquinariosUtilizados: React.FC<MaquinariosUtilizadosProps> = ({
     });
 
     useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) setMaquinarios(JSON.parse(saved));
-    }, [faseId]);
+        if (initialData && initialData.length > 0) {
+            setMaquinarios(initialData);
+        } else {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) setMaquinarios(JSON.parse(saved));
+        }
+    }, [faseId, initialData]);
 
     useEffect(() => {
         if (maquinarios.length > 0) {

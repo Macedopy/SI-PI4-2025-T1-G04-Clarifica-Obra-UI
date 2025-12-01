@@ -12,9 +12,10 @@ interface PhaseLayoutProps {
   };
   children: ReactNode[];
   onSave: (dadosDaFase: any) => void;
+  initialData?: any;
 }
 
-export const PhaseLayout = ({ phase, children, onSave }: PhaseLayoutProps) => {
+export const PhaseLayout = ({ phase, children, onSave, initialData }: PhaseLayoutProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const { getPhaseProgress } = useObra();
   const progressoReal = getPhaseProgress(phase.id);
@@ -31,7 +32,10 @@ export const PhaseLayout = ({ phase, children, onSave }: PhaseLayoutProps) => {
       fotos: JSON.parse(localStorage.getItem(`fotos-fase-${phase.id}`) || "[]"),
     };
 
-    onSave(dadosDaFase); // Envia tudo pro componente da fase
+    // Se temos initialData, mescla com os dados atuais
+    const dadosFinais = initialData ? { ...initialData, ...dadosDaFase } : dadosDaFase;
+
+    onSave(dadosFinais); // Envia tudo pro componente da fase
   };
 
   return (
