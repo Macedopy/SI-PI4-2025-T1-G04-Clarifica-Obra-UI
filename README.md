@@ -15,3 +15,6 @@ Se não iniciar, tente antes de todos os comandos:
 
 ## Técnico
 O projeto está separado em diversos componentes relacionados a cada fase da construção, encapsulando ações do usuário e desenvolvendo uma arquitetura mais flúida do projeto, auxiliando para futuras manutenções ou implementações.
+
+## Contribuição
+É obrigatório a criação de uma branch local em sua máquina alternativa da main, após as alterações, será feito uma reunião para confirmar as mudanças e realizar testes com os integrantes, após isso está liberado o commit na main.
