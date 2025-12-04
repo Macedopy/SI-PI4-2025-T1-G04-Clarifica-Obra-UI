@@ -1,102 +1,20 @@
-# Getting Started with Create React App
+# Clarifica Obra UI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Projeto designado a disponibilizar uma UI intuitiva para todos os usuários, com integração da API para a troca de informações.
+Este projeto é focado para auxiliar usuários finais a terem o acesso real ao progresso e o gerenciamento de suas construções e projetos, com ele, pode-se ter acesso a toda construção que está sendo gerenciada pela construtora, facilitando o dia a dia do cliente economizando seu tempo para evitar visitas desnecessárias na construção.
+## Scripts para início
+### `npm install`
 
-## Available Scripts
+Após instalar todas as dependências poderá rodar o comando:
+### `npm run start`
 
-In the project directory, you can run:
+Abrirá no link em seu browser [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
+Se não iniciar, tente antes de todos os comandos:
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Técnico
+O projeto está separado em diversos componentes relacionados a cada fase da construção, encapsulando ações do usuário e desenvolvendo uma arquitetura mais flúida do projeto, auxiliando para futuras manutenções ou implementações.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code order
-/clarifica-obra
-├── node_modules/
-├── public/
-├── src/
-│   ├── assets/                # Arquivos estáticos (fontes, ícones, imagens grandes)
-│   │   ├── fonts/
-│   │   └── images/
-│   │
-│   ├── components/            # Componentes reutilizáveis, de baixo nível
-│   │   ├── ui/                # Componentes genéricos (Botão, Input, Modal, Card)
-│   │   │   ├── Button/
-│   │   │   │   ├── Button.tsx
-│   │   │   │   └── Button.styles.ts (ou .css)
-│   │   │   └── Input/
-│   │   │
-│   │   └── layout/            # Estrutura da página (Header, Footer, Sidebar)
-│   │       ├── Header/
-│   │       └── Sidebar/
-│   │
-│   ├── hooks/                 # Lógica de componentes reutilizável (useDebounce, useAuth)
-│   │   ├── useAuth.ts
-│   │   └── useDebounce.ts
-│   │
-│   ├── pages/                 # Componentes de nível superior (páginas ou rotas)
-│   │   ├── Home/
-│   │   │   ├── Home.tsx       # Componente principal da página
-│   │   │   └── Home.styles.ts
-│   │   ├── Dashboard/
-│   │   └── ObraDetalhe/
-│   │
-│   ├── services/              # Funções para comunicação com APIs (requisições HTTP)
-│   │   ├── api.ts             # Configuração do Axios/Fetch
-│   │   └── obrasService.ts    # Funções para endpoints de Obras
-│   │
-│   ├── styles/                # Estilos globais e configurações de tema
-│   │   ├── global.css         # Reset CSS e estilos base
-│   │   └── theme.ts           # Definições de cores/tipografia (se usar Styled Components)
-│   │
-│   ├── types/                 # Definições de tipos TypeScript (interfaces, types)
-│   │   ├── obra.d.ts
-│   │   └── user.d.ts
-│   │
-│   ├── utils/                 # Funções utilitárias simples (formatadores, validadores)
-│   │   ├── formatter.ts
-│   │   └── validator.ts
-│   │
-│   ├── App.tsx                # Componente principal / Roteamento
-│   ├── main.tsx               # Entry point da aplicação (onde o React é renderizado)
-│   └── index.css              # Arquivo de diretivas do Tailwind/CSS global
-│
-├── tailwind.config.js         # Configuração do Tailwind CSS
-├── postcss.config.js          # Configuração do PostCSS (para CRA)
-├── package.json
-└── tsconfig.json              # Configuração do TypeScript
+## Contribuição
+É obrigatório a criação de uma branch local em sua máquina alternativa da main, após as alterações, será feito uma reunião para confirmar as mudanças e realizar testes com os integrantes, após isso está liberado o commit na main.
