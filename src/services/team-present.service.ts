@@ -1,3 +1,5 @@
+//Responsável de User: Bruno Macedo
+
 export const TeamPresentService = {
     //Coloque o Array do objeto da equipe aqui
     async getAll(): Promise<[]> {

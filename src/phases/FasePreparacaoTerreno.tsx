@@ -1,3 +1,4 @@
+//Responsável de User: Bruno Macedo
 // src/phases/FasePreparacaoTerreno.tsx
 import { Calendar, Users, Wrench, Truck, Package, Camera } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";

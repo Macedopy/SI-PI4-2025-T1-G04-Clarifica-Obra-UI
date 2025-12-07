@@ -1,3 +1,5 @@
+//Responsável: Bruno Macedo
+
 import React, { useState, useEffect } from 'react';
 import { Users, X, Plus, Edit3, Save, Clock, UserCheck, UserX, Coffee } from 'lucide-react';
 

@@ -1,3 +1,4 @@
+//Responsável de User: Bruno Macedo
 // src/phases/FaseFundacao.tsx
 import { Wrench, Users, Truck, Package, Hammer, Camera } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";

@@ -1,3 +1,5 @@
+//Responsável: Bruno Macedo, Bruno Martins, Felipe Teles
+
 // src/components/dashboard/ResumoDashboard.tsx
 import React from "react";
 import { 

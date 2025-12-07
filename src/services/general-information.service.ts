@@ -1,3 +1,5 @@
+//Responsável de User: Bruno Macedo
+
 export const GeneralInformationService = {
     async get(): Promise<[]> {
         //Colocar o objeto de Informações no lugar do []

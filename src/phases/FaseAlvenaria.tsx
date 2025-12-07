@@ -1,3 +1,6 @@
+//Responsável de User: Bruno Macedo
+
+
 // src/phases/FaseAlvenaria.tsx
 import { Camera, Hammer, Package, Truck, Users, Wrench } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";

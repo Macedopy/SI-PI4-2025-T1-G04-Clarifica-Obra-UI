@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo
 import React, { useState, useEffect } from 'react';
 import { Truck, X, Plus, Edit3, Save, Fuel, Clock, Wrench } from 'lucide-react';
 

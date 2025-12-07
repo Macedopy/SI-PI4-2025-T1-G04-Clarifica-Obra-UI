@@ -1,3 +1,4 @@
+//Responsável de User: Bruno Macedo
 
 export interface UserTypeResponse {
     type: string;

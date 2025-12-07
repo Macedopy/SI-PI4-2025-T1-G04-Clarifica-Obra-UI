@@ -1,3 +1,4 @@
+//Responsável de User: Bruno Macedo
 import { useState, useEffect } from 'react';
 import { useUserType } from './UserTypeContext';
 import { getPhaseData, PhaseData } from '../services/phases.service';

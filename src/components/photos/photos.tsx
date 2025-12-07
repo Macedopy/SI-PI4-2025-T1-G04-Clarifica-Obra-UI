@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo
 import { Camera } from "lucide-react";
 
 interface FotosRegistrosProps {

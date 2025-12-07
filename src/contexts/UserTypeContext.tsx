@@ -1,3 +1,4 @@
+//Responsável de User: Bruno Macedo
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface UserTypeContextData {

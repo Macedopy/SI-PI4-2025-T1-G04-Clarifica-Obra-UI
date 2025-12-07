@@ -1,3 +1,5 @@
+//Responsável de User: Bruno Macedo
+
 export interface MaterialItem {
     id: string;
     nome: string;

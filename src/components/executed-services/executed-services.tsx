@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo
 import React, { useState, useEffect } from 'react';
 import { Wrench, X, Plus, Edit3, Save, Clock, Play, Pause, CheckCircle } from 'lucide-react';
 import { useObra } from '../../contexts/ObraContext';

@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo e Bruno Martins
 // src/components/dashboard/general-information.tsx
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Square, Mountain, User, Edit3, Save, X } from 'lucide-react';

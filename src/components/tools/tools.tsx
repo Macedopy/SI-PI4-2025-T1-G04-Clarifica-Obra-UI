@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo
 import React, { useState, useEffect } from 'react';
 import { Hammer, X, Plus, Edit3, Save, Wrench, CheckCircle } from 'lucide-react';
 

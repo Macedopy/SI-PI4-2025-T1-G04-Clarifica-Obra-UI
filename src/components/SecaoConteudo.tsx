@@ -1,3 +1,5 @@
+//Responsável: Bruno Macedo
+
 // src/components/SecaoConteudo.tsx
 import { Camera, AlertTriangle, TrendingUp } from "lucide-react";
 import { MateriaisUtilizados } from "./used-materials/used-materials";

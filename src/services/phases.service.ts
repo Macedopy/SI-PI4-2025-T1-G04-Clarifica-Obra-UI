@@ -1,3 +1,5 @@
+//Responsável de User: Bruno Macedo
+
 import { phaseEndpoints } from "../constants/phaseEndpoints";
 
 export interface PhaseData {

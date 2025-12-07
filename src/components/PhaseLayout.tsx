@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo
 // src/components/PhaseLayout.tsx
 import { CheckCircle } from "lucide-react";
 import { ReactNode, useState, useEffect } from "react";

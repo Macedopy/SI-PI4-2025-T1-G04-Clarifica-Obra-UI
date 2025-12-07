@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo
 import { TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
 
 interface ResumoDashboardProps {

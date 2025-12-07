@@ -1,3 +1,4 @@
+//Responsável: Bruno Macedo, Bruno Martins, Felipe Teles
 // src/components/PhasesBreadcrumb.tsx
 import React, { useEffect } from "react";
 import { 
