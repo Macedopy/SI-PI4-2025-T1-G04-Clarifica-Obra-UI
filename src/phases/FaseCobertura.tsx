@@ -1,4 +1,4 @@
-//Responsável de User: Bruno Macedo
+//Responsável de User: Bruno Macedo e Joao Mucci
 
 
 // src/phases/FaseCobertura.tsx
