@@ -47,7 +47,7 @@ const Login: React.FC = () => {
                 />
               </svg>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">Clarifica Obra</h2>
+            <h2 className="text-3xl font-bold text-gray-900">RepObra</h2>
             <p className="text-gray-600 mt-2">
               Faça login para acessar sua obra
             </p>
@@ -146,7 +146,7 @@ const Login: React.FC = () => {
 
         {/* Footer */}
         <p className="mt-8 text-center text-sm text-gray-600">
-          © 2025 Clarifica Obra — Todos os direitos reservados
+          © 2025 RepObra — Todos os direitos reservados
         </p>
       </div>
     </div>

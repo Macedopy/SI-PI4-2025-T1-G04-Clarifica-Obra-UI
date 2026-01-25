@@ -26,7 +26,24 @@ export const FaseAcabamentos = () => {
   const initialData = phasesData['acabamentos'];
 
   const handleSave = async (dados: any) => {
-    const payload = { phaseName: "Acabamentos Finais", contractor: "Construtora Clarifica", ...dados };
+    const payload = {
+      phaseName: "Acabamentos Finais",
+      contractor: "Construtora Clarifica",
+      equipe: (dados.equipe || []).map((member: any) => ({
+        id: member.id,
+        name: member.name,
+        role: member.role,
+        cpf: member.cpf,
+        hoursWorked: member.hoursWorked,
+        status: member.status,
+        notes: member.notes,
+      })),
+      servicos: dados.servicos || [],
+      maquinarios: dados.maquinarios || [],
+      materiais: dados.materiais || [],
+      ferramentas: dados.ferramentas || [],
+      fotos: dados.fotos || [],
+    };
     try {
       const res = await fetch(`http://localhost:8080/finishing/${customerId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       alert(res.ok ? "Relatório de Acabamentos enviado!" : "Erro");

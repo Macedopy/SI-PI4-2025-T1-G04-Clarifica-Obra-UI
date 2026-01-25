@@ -51,7 +51,7 @@ const AppContent = () => {
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-10 shadow-2xl">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold">Clarifica Obra</h1>
+          <h1 className="text-5xl font-bold">RepObra</h1>
           <p className="text-xl mt-3 opacity-90">
             Gerenciamento completo da sua construção
           </p>
@@ -73,7 +73,7 @@ const AppContent = () => {
       {/* Footer */}
       <footer className="bg-gray-800 text-white text-center py-8 mt-20">
         <p className="text-sm">
-          © 2025 Clarifica Obra — Todos os direitos reservados
+          © 2025 RepObra — Todos os direitos reservados
         </p>
       </footer>
     </div>

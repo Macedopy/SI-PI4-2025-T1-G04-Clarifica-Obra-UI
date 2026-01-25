@@ -24,5 +24,11 @@ export async function getPhaseData(phaseId: string, customerId: string): Promise
   if (!response.ok) {
     throw new Error(`Failed to fetch data for phase: ${phaseId}`);
   }
-  return response.json();
+  const data = await response.json();
+
+  if (data.equipe && Array.isArray(data.equipe)) {
+    data.teamMembers = data.equipe;
+  }
+
+  return data;
 }

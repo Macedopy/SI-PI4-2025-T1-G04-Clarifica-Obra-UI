@@ -28,7 +28,15 @@ export const FaseCobertura = () => {
 
   const handleSave = async (dados: any) => {
     const payload = {
-      equipe: dados.equipe || [],
+      equipe: (dados.equipe || []).map((member: any) => ({
+        id: member.id,
+        name: member.name,
+        role: member.role,
+        cpf: member.cpf,
+        hoursWorked: member.hoursWorked,
+        status: member.status,
+        notes: member.notes,
+      })),
       servicos: dados.servicos || [],
       maquinarios: dados.maquinarios || [],
       materiais: dados.materiais || [],
