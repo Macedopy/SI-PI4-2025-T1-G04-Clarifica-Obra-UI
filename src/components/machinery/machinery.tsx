@@ -324,7 +324,7 @@ export const MaquinariosUtilizados: React.FC<MaquinariosUtilizadosProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t">
                     <div className="text-center">
                       <Clock className="mx-auto text-blue-600 mb-1" size={20} />
                       <p className="text-xs text-gray-600">Horas</p>

@@ -22,16 +22,12 @@ export const FasePreparacaoTerreno = () => {
   if (loading) return <div>Carregando dados da fase...</div>;
   if (error) return <div>{error}</div>;
 
-  // Usa 'as any' para burlar o TypeScript temporariamente e acessa a propriedade correta
   const rawData = phasesData['preparacao'] as any; 
-  
-  // Tenta pegar de 'geral' (DTO) ou 'generalInformations' (Entidade)
-  // E se for uma lista, pega o primeiro item.
+
   const infoGeralNoBanco = rawData?.geral || rawData?.generalInformations;
   const dadosGeraisIniciais = Array.isArray(infoGeralNoBanco) ? infoGeralNoBanco[0] : infoGeralNoBanco;
 
   const handleSave = async (dados: any) => {
-    // Pega o dado que veio do formulário (pode vir como array ou objeto)
     const formGeral = Array.isArray(dados.geral) ? dados.geral[0] : dados.geral;
     const dadosGerais = formGeral || {};
 
@@ -39,7 +35,6 @@ export const FasePreparacaoTerreno = () => {
       phaseName: "Preparação do Terreno",
       contractor: "Construtora Clarifica",
       
-      // Empacota o objeto único dentro de uma Lista [ ] para o Java aceitar
       geral:
         {
           endereco: dadosGerais.endereco || "",
@@ -100,10 +95,6 @@ export const FasePreparacaoTerreno = () => {
       onSave={handleSave}
       initialData={rawData} // Passa o objeto completo
     >
-      {/* AQUI ESTAVA O ERRO DO TYPESCRIPT:
-         Mudamos para passar 'dadosGeraisIniciais' que calculamos ali em cima.
-         Isso garante que o formulário abra preenchido se já tiver dados no banco.
-      */}
       <SecaoConteudo 
         secaoId="geral" 
         faseId="preparacao" 

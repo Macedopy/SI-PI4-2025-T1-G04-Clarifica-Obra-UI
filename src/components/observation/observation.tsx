@@ -65,7 +65,7 @@ export const ObservacoesPendencias: React.FC<ObservacoesPendenciasProps> = ({ is
 
                 <div>
                     <label className="block text-sm font-medium mb-2">Entregas Programadas</label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col md:flex-row gap-2">
                         <input type="date" className="flex-1 p-2 border rounded" />
                         <input type="text" className="flex-1 p-2 border rounded" placeholder="Descrição da entrega" />
                     </div>

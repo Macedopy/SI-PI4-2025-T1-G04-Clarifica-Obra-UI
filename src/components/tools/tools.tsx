@@ -379,16 +379,18 @@ export const FerramentasUtilizadas: React.FC<FerramentasUtilizadasProps> = ({
                 </div>
               ) : (
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <p className="font-bold text-gray-800">{ferramenta.name}</p>
-                      <p className="text-sm text-gray-600">{ferramenta.category}</p>
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-gray-800">{ferramenta.name}</p>
+                        <p className="text-sm text-gray-600">{ferramenta.category}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {ferramenta.condition === 'EXCELLENT' && <CheckCircle className="text-green-600" size={20} />}
-                      {ferramenta.condition === 'GOOD' && <CheckCircle className="text-blue-600" size={20} />}
-                      {ferramenta.condition === 'POOR' && <Wrench className="text-orange-600" size={20} />}
-                      {ferramenta.condition === 'UNAVAILABLE' && <X className="text-red-600" size={20} />}
+                    <div className="flex items-center gap-2 mt-2">
+                      {ferramenta.condition === 'EXCELLENT' && <CheckCircle className="text-green-600" size={16} />}
+                      {ferramenta.condition === 'GOOD' && <CheckCircle className="text-blue-600" size={16} />}
+                      {ferramenta.condition === 'POOR' && <Wrench className="text-orange-600" size={16} />}
+                      {ferramenta.condition === 'UNAVAILABLE' && <X className="text-red-600" size={16} />}
                       <span className={`text-xs px-2 py-1 rounded-full ${getConditionColorClass(ferramenta.condition)}`}>
                         {getConditionLabel(ferramenta.condition)}
                       </span>

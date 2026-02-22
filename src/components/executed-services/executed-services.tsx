@@ -409,7 +409,7 @@ export const ServicosExecutados: React.FC<ServicosExecutadosProps> = ({
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-3 text-center text-sm mb-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-center text-sm mb-3">
                     <div className="bg-blue-50 p-2 rounded">
                       <Clock className="mx-auto mb-1 text-blue-600" size={16} />
                       <p className="text-xs text-gray-600">Executadas</p>

@@ -32,7 +32,7 @@ export const PhasesBreadcrumb = () => {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center gap-3 py-4 bg-white shadow-md">
+      <div className="flex flex-nowrap overflow-x-auto gap-3 py-4 bg-white shadow-md px-4 sm:flex-wrap sm:justify-center sm:px-0">
         {/* Renderiza os botões das Fases Normais */}
         {fases.map((fase, index) => {
           const Icon = fase.icon;
@@ -44,7 +44,7 @@ export const PhasesBreadcrumb = () => {
             <button
               key={fase.id}
               onClick={() => setCurrentPhaseId(fase.id)}
-              className={`flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
+              className={`flex-shrink-0 flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
                 isActive
                   ? "bg-blue-600 text-white shadow-2xl ring-4 ring-blue-300"
                   : isCompleted
@@ -54,8 +54,7 @@ export const PhasesBreadcrumb = () => {
               title={`${fase.nome}: ${progresso}%`}
             >
               <Icon size={22} />
-              <span className="hidden sm:inline">{fase.nome}</span>
-              <span className="sm:hidden font-bold">{index + 1}</span>
+              <span>{fase.nome}</span>
               {isCompleted && <CheckCircle size={18} className="ml-1" />}
             </button>
           );
@@ -67,7 +66,7 @@ export const PhasesBreadcrumb = () => {
         {/* Botão Especial do Dashboard */}
         <button
           onClick={() => setCurrentPhaseId("dashboard")}
-          className={`flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
+          className={`flex-shrink-0 flex items-center gap-3 px-5 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
             currentPhaseId === "dashboard"
               ? "bg-indigo-700 text-white shadow-2xl ring-4 ring-indigo-300"
               : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl"

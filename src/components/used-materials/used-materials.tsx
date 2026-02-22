@@ -374,7 +374,7 @@ export const MateriaisUtilizados: React.FC<MateriaisUtilizadosProps> = ({
                 </div>
               ) : (
                 <div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
                     <div>
                       <p className="text-xs text-gray-600">Categoria</p>
                       <p className="font-semibold text-purple-700">{getCategoryLabel(material.category) || '—'}</p>
