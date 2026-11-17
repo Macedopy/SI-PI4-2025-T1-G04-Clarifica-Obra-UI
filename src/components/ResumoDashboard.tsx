@@ -10,6 +10,7 @@ import { usePhasesData } from "../contexts/PhasesContext";
 import { useObra } from "../contexts/ObraContext";
 
 interface ResumoDashboardProps {
+  constructionId?: string;
   isReadOnly?: boolean;
 }
 

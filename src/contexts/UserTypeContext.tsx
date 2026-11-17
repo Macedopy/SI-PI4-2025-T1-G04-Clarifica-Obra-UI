@@ -52,15 +52,22 @@ export const UserTypeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
 
       const data = await response.json();
+      console.log('Resposta completa do backend (Login):', data);
       
+      // Detecta o tipo de usuário verificando múltiplos campos comuns
+      const rawType = data.role || data.type || data.userType || 'CLIENT';
+      const role = rawType.toUpperCase(); // Garante consistência em maiúsculas
+
+      console.log('Tipo de usuário detectado:', role);
+
       // Salva os dados do usuário
       setCustomerId(inputCustomerId);
-      setUserType(data.type || 'cliente');
+      setUserType(role);
       setIsAuthenticated(true);
 
       // Persiste no localStorage
       localStorage.setItem('customerId', inputCustomerId);
-      localStorage.setItem('userType', data.type || 'cliente');
+      localStorage.setItem('userType', role);
       
     } catch (error) {
       console.error('Erro no login:', error);

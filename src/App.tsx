@@ -1,78 +1,122 @@
 //Responsável de User: Bruno Macedo
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { PhasesBreadcrumb } from "./components/PhasesBreadcrumb";
 import Login from "./components/Login";
 
-import { ResumoDashboard } from "./components/ResumoDashboard"; 
-
-import { FasePreparacaoTerreno } from "./phases/FasePreparacaoTerreno";
-import { FaseFundacao } from "./phases/FaseFundacao";
-import { FaseEstrutura } from "./phases/FaseEstrutura";
-import { FaseAlvenaria } from "./phases/FaseAlvenaria";
-import { FaseCobertura } from "./phases/FaseCobertura";
-import { FaseInstalacoesHidraulicas } from "./phases/FaseInstalacoesHidraulicas";
-import { FaseInstalacoesEletricas } from "./phases/FaseInstalacoesEletricas";
-import { FaseRevestimentos } from "./phases/FaseRevestimentos";
-import { FaseAcabamentos } from "./phases/FaseAcabamentos";
+import { ResumoDashboard } from "./components/dashboard/dashboard"; 
 import { ObraProvider } from "./contexts/ObraContext";
-import { usePhaseNavigation, PhasesProvider } from "./contexts/PhasesContext";
+import { usePhaseNavigation, PhasesProvider, usePhasesData } from "./contexts/PhasesContext";
 import { UserTypeProvider, useUserType } from "./contexts/UserTypeContext";
-
-const phaseComponents: Record<string, React.FC> = {
-  preparacao: FasePreparacaoTerreno,
-  fundacao: FaseFundacao,
-  estrutura: FaseEstrutura,
-  alvenaria: FaseAlvenaria,
-  cobertura: FaseCobertura,
-  "instalacoes-hidraulicas": FaseInstalacoesHidraulicas,
-  "instalacoes-eletricas": FaseInstalacoesEletricas,
-  revestimentos: FaseRevestimentos,
-  acabamentos: FaseAcabamentos,
-  dashboard: ResumoDashboard, 
-};
+import { DynamicPhase } from "./phases/DynamicPhase";
+import { ConstructionLoader } from "./components/general/ConstructionLoader";
+import { UserMenu } from "./components/UserMenu";
+import { UiSizeProvider, useUiSize } from "./contexts/UiSizeContext";
 
 const AppContent = () => {
   const { currentPhaseId } = usePhaseNavigation();
-  const { isAuthenticated, loading } = useUserType();
+  const { phases } = usePhasesData();
+  const { isAuthenticated, loading, customerId } = useUserType();
+  const [constructionId, setConstructionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (customerId && !constructionId) {
+      fetch(`http://localhost:8080/constructions/user/${customerId}`, { credentials: 'include' })
+        .then(async (res) => {
+          if (res.ok) {
+            const data: any[] = await res.json();
+            if (data && data.length > 0) {
+              setConstructionId(data[0].id);
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [customerId, constructionId]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ConstructionLoader />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
     return <Login />;
   }
 
-  const CurrentPhaseComponent = phaseComponents[currentPhaseId ?? 0] || FasePreparacaoTerreno;
+  // Se estiver no dashboard, renderiza o ResumoDashboard
+  if (currentPhaseId === "dashboard") {
+    return (
+      <LayoutWrapper>
+        <ResumoDashboard constructionId={constructionId || undefined} />
+      </LayoutWrapper>
+    );
+  }
+
+  // Se houver uma fase selecionada, tenta renderizá-la dinamicamente
+  const dynamicPhaseInfo = phases.find(p => p.id === currentPhaseId);
+  
+  const renderContent = () => {
+    if (dynamicPhaseInfo) {
+      return (
+        <DynamicPhase 
+          phaseId={dynamicPhaseInfo.id} 
+          phaseName={dynamicPhaseInfo.nome} 
+          componentIds={dynamicPhaseInfo.components || []}
+          constructionId={constructionId || undefined}
+        />
+      );
+    }
+    // Se não houver nada criado, mostra uma mensagem amigável ou o dashboard
+    return <ResumoDashboard constructionId={constructionId || undefined} />;
+  };
+
+  return (
+    <LayoutWrapper>
+      {renderContent()}
+    </LayoutWrapper>
+  );
+};
+
+const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <UiSizeProvider>
+    <LayoutShell>{children}</LayoutShell>
+  </UiSizeProvider>
+);
+
+const LayoutShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { uiSize, size } = useUiSize();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-800 to-blue-900 text-white py-10 shadow-2xl">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold">RepObra</h1>
-          <p className="text-xl mt-3 opacity-90">
-            Gerenciamento completo da sua construção
-          </p>
-        </div>
-      </header>
-
-      {/* Breadcrumb de fases (com progresso real) */}
-      <div className="sticky top-0 z-50 bg-white shadow-md">
-        <div className="container mx-auto px-6">
-          <PhasesBreadcrumb />
+      {/* Barra superior: navegação das fases + menu do usuário */}
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div
+          className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-3"
+          style={uiSize === 'large' ? { maxWidth: '108rem' } : undefined}
+        >
+          <div className="flex-1 min-w-0">
+            <PhasesBreadcrumb />
+          </div>
+          <div className="flex-shrink-0 self-stretch flex items-center pl-3 border-l border-gray-200">
+            <UserMenu />
+          </div>
         </div>
       </div>
 
-      {/* Conteúdo da fase atual */}
-      <main className="container mx-auto px-6 py-10 max-w-7xl">
-        <CurrentPhaseComponent />
+      {/* Conteúdo dinâmico */}
+      <main
+        className="container mx-auto px-6 py-10"
+        style={{ maxWidth: size.maxWidth, zoom: size.zoom }}
+      >
+        {children}
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white text-center py-8 mt-20">
-        <p className="text-sm">
+      <footer className="border-t border-gray-200 bg-white text-gray-400 text-center py-6 mt-16">
+        <p className="text-xs">
           © 2025 RepObra — Todos os direitos reservados
         </p>
       </footer>

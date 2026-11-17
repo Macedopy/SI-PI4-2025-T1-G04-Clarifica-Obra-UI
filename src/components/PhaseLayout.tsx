@@ -1,7 +1,7 @@
 //Responsável: Bruno Macedo
 // src/components/PhaseLayout.tsx
 import { CheckCircle } from "lucide-react";
-import { ReactNode, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useObra } from "../contexts/ObraContext";
 
 interface PhaseLayoutProps {
@@ -11,16 +11,17 @@ interface PhaseLayoutProps {
     icon: any;
     secoes: { id: string; nome: string; icon: any }[];
   };
-  children: ReactNode[];
-  onSave: (dadosDaFase: any) => void;
+  children: React.ReactNode;
   initialData?: any;
 }
 
-export const PhaseLayout = ({ phase, children, onSave, initialData }: PhaseLayoutProps) => {
+export const PhaseLayout = ({ phase, children, initialData }: PhaseLayoutProps) => {
   const { getPhaseProgress, updateSecaoProgress } = useObra();
   const [activeTab, setActiveTab] = useState(0);
   const progressoReal = getPhaseProgress(phase.id);
   const Icon = phase.icon;
+
+  const childrenArray = React.Children.toArray(children);
 
   useEffect(() => {
     const currentPhaseId = phase.id;
@@ -53,22 +54,6 @@ export const PhaseLayout = ({ phase, children, onSave, initialData }: PhaseLayou
     }
     updateSecaoProgress(currentPhaseId, 'servicos', servicosProgress);
   }, [phase.id, activeTab, updateSecaoProgress, initialData]);
-
-  const handleSaveWithData = () => {
-    const dadosDaFase = {
-      geral: JSON.parse(localStorage.getItem(`geral-fase-${phase.id}`) || "{}"),
-      equipe: JSON.parse(localStorage.getItem(`equipe-fase-${phase.id}`) || "[]"),
-      servicos: JSON.parse(localStorage.getItem(`servicos-fase-${phase.id}`) || "[]"),
-      maquinarios: JSON.parse(localStorage.getItem(`maquinarios-fase-${phase.id}`) || "[]"),
-      materiais: JSON.parse(localStorage.getItem(`materiais-fase-${phase.id}`) || "[]"),
-      ferramentas: JSON.parse(localStorage.getItem(`ferramentas-fase-${phase.id}`) || "[]"),
-      fotos: JSON.parse(localStorage.getItem(`fotos-fase-${phase.id}`) || "[]"),
-    };
-
-    const dadosFinais = initialData ? { ...initialData, ...dadosDaFase } : dadosDaFase;
-
-    onSave(dadosFinais);
-  };
 
   return (
     <div className="space-y-4 md:space-y-8">
@@ -128,17 +113,7 @@ export const PhaseLayout = ({ phase, children, onSave, initialData }: PhaseLayou
 
       {/* Conteúdo */}
       <div className="bg-white rounded-2xl shadow-xl p-4 md:p-10">
-        {children[activeTab]}
-      </div>
-
-      {/* Botão de Envio */}
-      <div className="flex justify-center md:justify-end">
-        <button
-          onClick={handleSaveWithData}
-          className="w-full md:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-lg md:text-xl px-8 md:px-12 py-4 md:py-5 rounded-2xl shadow-2xl transition transform hover:scale-105"
-        >
-          Enviar Relatório – {phase.nome}
-        </button>
+        {childrenArray[activeTab]}
       </div>
     </div>
   );

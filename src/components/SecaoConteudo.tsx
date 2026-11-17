@@ -1,6 +1,7 @@
 //Responsável: Bruno Macedo
 
 // src/components/SecaoConteudo.tsx
+import React, { useState, useEffect } from 'react';
 import { Camera, AlertTriangle, TrendingUp } from "lucide-react";
 import { MateriaisUtilizados } from "./used-materials/used-materials";
 import { FerramentasUtilizadas } from "./tools/tools";
@@ -8,15 +9,47 @@ import { MaquinariosUtilizados } from "./machinery/machinery";
 import { EquipeUtilizada } from "./team-present/team-present";
 import { ServicosExecutados } from "./executed-services/executed-services";
 import { InformacoesGerais } from "./general/general-information";
+import { useUserType } from '../contexts/UserTypeContext';
+import { UserType } from '../types/UserTypes';
 
 interface SecaoConteudoProps {
   secaoId: string;
   faseId: string;
   isReadOnly?: boolean;
   initialData?: any;
+  editable?: boolean;
 }
 
-export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false, initialData }: SecaoConteudoProps) => {
+export const SecaoConteudo = ({
+  secaoId,
+  faseId,
+  isReadOnly = false,
+  initialData,
+  editable = false,
+}: SecaoConteudoProps & Omit<React.HTMLAttributes<HTMLDivElement>, keyof SecaoConteudoProps>) => {
+  const { userType } = useUserType();
+  const effectiveIsReadOnly = isReadOnly || userType === UserType.Cliente;
+  const effectiveEditable = editable && userType !== UserType.Cliente;
+
+  const [editMode, setEditMode] = useState(false);
+  const [localData, setLocalData] = useState(initialData);
+
+  useEffect(() => {
+    if (effectiveEditable && !editMode) {
+      setEditMode(true);
+    } else if (!effectiveEditable && editMode) {
+      setEditMode(false);
+    }
+  }, [effectiveEditable, editMode]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setLocalData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    setEditMode(false);
+  };
+
   if (secaoId === "fotos") {
     return (
       <div className="space-y-6">
@@ -24,11 +57,13 @@ export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false, initialData
           <Camera className="text-blue-600" size={32} />
           Fotos da Fase
         </h3>
-        <div className="border-4 border-dashed border-gray-300 rounded-2xl p-16 text-center hover:border-blue-400 transition">
-          <Camera className="mx-auto text-gray-400 mb-4" size={64} />
-          <p className="text-xl text-gray-600 font-medium">Clique para adicionar fotos</p>
-          <p className="text-sm text-gray-500 mt-2">Suporta múltiplas imagens</p>
-        </div>
+        {!effectiveIsReadOnly && (
+          <div className="border-4 border-dashed border-gray-300 rounded-2xl p-16 text-center hover:border-blue-400 transition cursor-pointer">
+            <Camera className="mx-auto text-gray-400 mb-4" size={64} />
+            <p className="text-xl text-gray-600 font-medium">Clique para adicionar fotos</p>
+            <p className="text-sm text-gray-500 mt-2">Suporta múltiplas imagens</p>
+          </div>
+        )}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="aspect-square bg-gray-200 border-2 border-dashed rounded-xl flex items-center justify-center hover:bg-gray-300 transition">
@@ -50,8 +85,27 @@ export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false, initialData
         <textarea
           className="w-full p-5 border-2 border-gray-300 rounded-xl h-48 text-lg resize-none focus:border-blue-500 focus:outline-none transition"
           placeholder="Adicione observações importantes, pendências ou alertas desta fase..."
-          disabled={isReadOnly}
+          disabled={effectiveIsReadOnly || !effectiveEditable}
+          value={localData?.observacoes || ""}
+          onChange={(e) => handleInputChange('observacoes', e.target.value)}
         />
+        <div className="flex gap-4 mt-4">
+          {effectiveEditable ? (
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={handleSave}
+            >
+              Salvar
+            </button>
+          ) : (
+            <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 cursor-not-allowed"
+              disabled
+            >
+              Visualizar
+            </button>
+          )}
+        </div>
         <div className="space-y-4 mt-8">
           <div className="p-5 bg-yellow-50 border-l-8 border-yellow-500 rounded-r-xl">
             <div className="font-bold text-yellow-900">Aguardando aprovação do cliente</div>
@@ -96,55 +150,28 @@ export const SecaoConteudo = ({ secaoId, faseId, isReadOnly = false, initialData
   }
 
   if (secaoId === "materiais") {
-    return <MateriaisUtilizados isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
+    return <MateriaisUtilizados isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
   }
-  if (secaoId === "ferramentas") {
-    return <FerramentasUtilizadas isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
-  }
-  if (secaoId === "maquinarios") {
-    return <MaquinariosUtilizados isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
-  }
-  if (secaoId === "equipe") {
-    return <EquipeUtilizada isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
-  }
+
   if (secaoId === "servicos") {
-    return <ServicosExecutados isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
+    return <ServicosExecutados isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
   }
+
+  if (secaoId === "equipe") {
+    return <EquipeUtilizada isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+  }
+
+  if (secaoId === "maquinarios") {
+    return <MaquinariosUtilizados isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+  }
+
+  if (secaoId === "ferramentas") {
+    return <FerramentasUtilizadas isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+  }
+
   if (secaoId === "geral") {
-    return <InformacoesGerais isReadOnly={isReadOnly} faseId={faseId} initialData={initialData} />;
+    return <InformacoesGerais isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
   }
 
-  const camposMock: string[] = {
-    equipe: ["Engenheiro", "Mestre de obras", "Pedreiro", "Ajudante"],
-    servicos: ["Escavação", "Armação", "Concretagem"],
-    maquinarios: ["Betoneira", "Guindaste"],
-    ferramentas: ["Nível", "Trena", "Martelo"],
-  }[secaoId] || [];
-
-  return (
-    <div className="space-y-6">
-      <h3 className="text-2xl font-bold capitalize">{secaoId}</h3>
-      <div className="grid gap-6">
-        {camposMock.length > 0 ? (
-          camposMock.map((campo, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border-2 border-gray-200 hover:border-blue-400 transition"
-            >
-              <label className="text-lg font-medium text-gray-800 cursor-pointer">{campo}</label>
-              <input
-                type="checkbox"
-                className="w-8 h-8 text-blue-600 rounded focus:ring-blue-500"
-                disabled={isReadOnly}
-              />
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500 py-12 text-lg">
-            Nenhum item cadastrado para esta seção.
-          </p>
-        )}
-      </div>
-    </div>
-  );
+  return null;
 };
