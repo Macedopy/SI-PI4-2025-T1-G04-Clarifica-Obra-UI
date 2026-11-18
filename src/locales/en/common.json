@@ -77,5 +77,15 @@
     "logout": "Logout",
     "sizeLabel": "Element size",
     "sizeDesc": "Adjusts the size of the work elements."
+  },
+  "section": {
+    "geral": "General",
+    "equipe": "Team",
+    "servicos": "Services",
+    "maquinarios": "Machinery",
+    "materiais": "Materials",
+    "ferramentas": "Tools",
+    "fotos": "Photos",
+    "observacoes": "Observations"
   }
 }

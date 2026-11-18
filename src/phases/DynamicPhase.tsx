@@ -11,6 +11,7 @@ import { CostControl } from "../components/CostControl";
 import { useUserType } from "../contexts/UserTypeContext";
 import { usePhasesData } from "../contexts/PhasesContext";
 import { useUiSize } from "../contexts/UiSizeContext";
+import { useLocale } from "../contexts/LocaleContext";
 
 const ICON_MAP: Record<string, any> = {
   geral: Info,
@@ -21,17 +22,6 @@ const ICON_MAP: Record<string, any> = {
   ferramentas: Hammer,
   fotos: Camera,
   observacoes: AlertTriangle,
-};
-
-const NAME_MAP: Record<string, string> = {
-  geral: "Geral",
-  equipe: "Equipe",
-  servicos: "Serviços",
-  maquinarios: "Maquinários",
-  materiais: "Materiais",
-  ferramentas: "Ferramentas",
-  fotos: "Fotos",
-  observacoes: "Observações",
 };
 
 interface DynamicPhaseProps {
@@ -45,15 +35,16 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
   const { customerId, userType } = useUserType();
   const { phases, phasesData, loading } = usePhasesData();
   const { uiSize, size } = useUiSize();
+  const { t } = useLocale();
 
-  if (loading) return <div className="p-10 text-center text-xl font-semibold">Carregando dados da fase...</div>;
+  if (loading) return <div className="p-10 text-center text-xl font-semibold">{t('common.loading')}</div>;
 
   const initialData = phasesData[phaseId] || {};
   const phaseInfo = phases.find((phase) => phase.id === phaseId);
 
   const secoes = componentIds.map(id => ({
     id,
-    nome: NAME_MAP[id] || id,
+    nome: t(`section.${id}`, {}) || id,
     icon: ICON_MAP[id] || FileText
   }));
 
@@ -66,12 +57,12 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
       });
 
       if (res.ok) {
-        alert(`Relatório de ${phaseName} enviado com sucesso!`);
+        alert(t('phase.reportSent', { phaseName }));
       } else {
-        alert("Erro ao enviar o relatório. Tente novamente.");
+        alert(t('phase.reportError'));
       }
     } catch (err) {
-      alert("Falha na conexão com o servidor.");
+      alert(t('phase.connectionError'));
     }
   };
 
@@ -148,11 +139,11 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
               type="button"
               onClick={handleSendReport}
               className="flex items-center gap-2 w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold text-base sm:text-lg px-6 sm:px-10 py-2.5 sm:py-3 rounded-2xl shadow-lg shadow-emerald-900/20 transition-all duration-200 transform hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:ring-offset-2"
-              aria-label={`Enviar relatório da fase ${phaseName}`}
+              aria-label={t('phase.sendReport', { phaseName })}
             >
               <Send size={18} strokeWidth={2.2} />
-              <span className="hidden sm:inline">Enviar Relatório – {phaseName}</span>
-              <span className="sm:hidden">Enviar Relatório</span>
+              <span className="hidden sm:inline">{t('phase.sendReport', { phaseName })}</span>
+              <span className="sm:hidden">{t('phase.sendReportShort')}</span>
             </button>
           </div>
         </div>,

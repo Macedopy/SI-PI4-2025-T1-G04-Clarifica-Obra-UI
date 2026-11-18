@@ -77,5 +77,15 @@
     "logout": "Logoff",
     "sizeLabel": "Tamanho dos elementos",
     "sizeDesc": "Ajusta o tamanho dos elementos da obra."
+  },
+  "section": {
+    "geral": "Geral",
+    "equipe": "Equipe",
+    "servicos": "Serviços",
+    "maquinarios": "Maquinários",
+    "materiais": "Materiais",
+    "ferramentas": "Ferramentas",
+    "fotos": "Fotos",
+    "observacoes": "Observações"
   }
 }
