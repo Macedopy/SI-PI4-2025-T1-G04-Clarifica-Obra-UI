@@ -1,0 +1,13 @@
+{
+  "phase.pre_construction": "Pre-Construction",
+  "phase.site_preparation": "Site Preparation",
+  "phase.foundation": "Foundation",
+  "phase.framing": "Framing",
+  "phase.building_envelope": "Roofing & Exterior Shell",
+  "phase.mep_rough_in": "MEP Rough-In",
+  "phase.insulation_drywall": "Insulation & Drywall",
+  "phase.interior_finishes": "Interior Finishes",
+  "phase.exterior_finishes": "Exterior Finishes & Landscaping",
+  "phase.final_systems_inspections": "Final Systems & Inspections",
+  "phase.closeout_handover": "Closeout & Handover"
+}

@@ -12,6 +12,7 @@ import { DynamicPhase } from "./phases/DynamicPhase";
 import { ConstructionLoader } from "./components/general/ConstructionLoader";
 import { UserMenu } from "./components/UserMenu";
 import { UiSizeProvider, useUiSize } from "./contexts/UiSizeContext";
+import { LocaleProvider } from "./contexts/LocaleContext";
 
 const AppContent = () => {
   const { currentPhaseId } = usePhaseNavigation();
@@ -81,9 +82,11 @@ const AppContent = () => {
 };
 
 const LayoutWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <UiSizeProvider>
-    <LayoutShell>{children}</LayoutShell>
-  </UiSizeProvider>
+  <LocaleProvider>
+    <UiSizeProvider>
+      <LayoutShell>{children}</LayoutShell>
+    </UiSizeProvider>
+  </LocaleProvider>
 );
 
 const LayoutShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {

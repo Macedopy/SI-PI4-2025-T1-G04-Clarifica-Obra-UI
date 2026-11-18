@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { usePhasesData } from '../contexts/PhasesContext';
 import { DEFAULT_PHASE_ICON_ID, PHASE_ICONS } from '../utils/phaseIcons';
+import { useLocale } from '../contexts/LocaleContext';
 
 interface ComponentOption {
   id: string;
@@ -25,18 +26,31 @@ const AVAILABLE_COMPONENTS: ComponentOption[] = [
   { id: 'observacoes', nome: 'Observações', icon: AlertTriangle },
 ];
 
+interface TemplatePhaseOption {
+  id: string;
+  phaseId: string;
+  nameKey: string;
+  nome: string;
+  icon: string;
+  components: string[];
+}
+
 interface CreatePhaseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  customerId: string;
+  constructionId: string;
 }
 
-export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onClose, customerId }) => {
+export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onClose, constructionId }) => {
   const { refreshPhases } = usePhasesData();
+  const { t, language } = useLocale();
+  const [templatePhases, setTemplatePhases] = useState<TemplatePhaseOption[]>([]);
   const [phaseName, setPhaseName] = useState('');
+  const [selectedTemplatePhase, setSelectedTemplatePhase] = useState<TemplatePhaseOption | null>(null);
   const [selectedIcon, setSelectedIcon] = useState(DEFAULT_PHASE_ICON_ID);
   const [selectedComponents, setSelectedComponents] = useState<ComponentOption[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
 
   // Trava o scroll do fundo enquanto o modal está aberto
   useEffect(() => {
@@ -57,6 +71,53 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
+
+  // Carrega fases do template quando o modal abre
+  useEffect(() => {
+    if (!isOpen || !constructionId) return;
+
+    const loadTemplatePhases = async () => {
+      setLoadingTemplates(true);
+      try {
+        // Busca a obra para obter o template_id
+        const constructionRes = await fetch(`http://localhost:8080/constructions/user/${constructionId}`);
+        if (!constructionRes.ok) return;
+        const constructions: any[] = await constructionRes.json();
+        if (constructions.length === 0) return;
+
+        const construction = constructions[0];
+        const templateId = construction.templateId;
+
+        if (!templateId) {
+          // Sem template: usa fases genéricas (modo Brasil atual)
+          setTemplatePhases([]);
+          return;
+        }
+
+        // Busca as fases do template
+        const templateRes = await fetch(`http://localhost:8080/api/templates/${templateId}/phases`);
+        if (!templateRes.ok) return;
+        const templatePhasesData: any[] = await templateRes.json();
+
+        const phasesWithNames: TemplatePhaseOption[] = templatePhasesData.map((p: any) => ({
+          id: p.id,
+          phaseId: p.phaseId,
+          nome: t(`phase.${p.phaseId}`, {}) || p.nameKey,
+          nameKey: p.nameKey,
+          icon: p.icon || 'package',
+          components: p.components ? JSON.parse(p.components) : ['equipe', 'servicos', 'maquinarios', 'materiais', 'ferramentas', 'fotos'],
+        }));
+
+        setTemplatePhases(phasesWithNames);
+      } catch (err) {
+        console.error('Erro ao carregar fases do template:', err);
+      } finally {
+        setLoadingTemplates(false);
+      }
+    };
+
+    loadTemplatePhases();
+  }, [isOpen, constructionId, language, t]);
 
   if (!isOpen) return null;
 
@@ -88,8 +149,21 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
     setSelectedComponents(selectedComponents.filter(c => c.id !== id));
   };
 
+  const selectTemplatePhase = (phase: TemplatePhaseOption) => {
+    setSelectedTemplatePhase(phase);
+    setPhaseName(phase.nome);
+    setSelectedIcon(phase.icon as any);
+    // Aplica componentes padrão do template
+    const defaultComps = phase.components.map((cid: string) => {
+      const comp = AVAILABLE_COMPONENTS.find(c => c.id === cid);
+      return comp || AVAILABLE_COMPONENTS[0];
+    });
+    setSelectedComponents(defaultComps);
+  };
+
   const resetAndClose = () => {
     setPhaseName('');
+    setSelectedTemplatePhase(null);
     setSelectedIcon(DEFAULT_PHASE_ICON_ID);
     setSelectedComponents([]);
     onClose();
@@ -97,7 +171,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
 
   const handleConfirm = async () => {
     if (!phaseName.trim()) {
-      alert('Por favor, insira o nome da fase.');
+      alert(t('phase.name'));
       return;
     }
     if (selectedComponents.length === 0) {
@@ -106,7 +180,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
     }
 
     const payload = {
-      constructionId: customerId,
+      constructionId: constructionId,
       name: phaseName.trim(),
       icon: selectedIcon,
       components: selectedComponents.map(c => c.id)
@@ -126,14 +200,19 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
         await refreshPhases();
         resetAndClose();
       } else {
-        alert('Erro ao criar fase. Tente novamente.');
+        alert(t('phase.reportError'));
       }
     } catch (error) {
       console.error('Erro ao criar fase:', error);
-      alert('Falha na conexão com o servidor.');
+      alert(t('phase.connectionError'));
     } finally {
       setSaving(false);
     }
+  };
+
+  const tComponent = (id: string) => {
+    const comp = AVAILABLE_COMPONENTS.find(c => c.id === id);
+    return comp ? comp.nome : id;
   };
 
   const modal = (
@@ -152,9 +231,9 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
           <div>
             <h2 id="create-phase-title" className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <Plus size={22} className="text-blue-600" />
-              Configurar Nova Fase
+              {t('phase.title')}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">Arraste os componentes ou clique para montar a sua fase</p>
+            <p className="text-sm text-gray-500 mt-1">{t('phase.dragComponents')}</p>
           </div>
           <button
             onClick={resetAndClose}
@@ -167,16 +246,53 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
 
         {/* Body */}
         <div className="px-6 py-6 overflow-y-auto flex-1 space-y-6">
-          {/* Nome da fase */}
+          {/* Seleção de fase do template */}
+          {templatePhases.length > 0 && (
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                {t('phase.name')}
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {templatePhases.map((phase) => {
+                  const isSelected = selectedTemplatePhase?.phaseId === phase.phaseId;
+                  const Icon = PHASE_ICONS.find(o => o.id === phase.icon)?.icon || Package;
+                  return (
+                    <button
+                      key={phase.id}
+                      type="button"
+                      onClick={() => selectTemplatePhase(phase)}
+                      aria-label={phase.nome}
+                      aria-pressed={isSelected}
+                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                        isSelected
+                          ? 'bg-blue-50 border-blue-500 text-blue-700 ring-2 ring-blue-200'
+                          : 'bg-white border-gray-200 hover:border-blue-300 text-gray-600'
+                      }`}
+                    >
+                      <Icon size={24} />
+                      <span className="text-xs font-medium text-center truncate">{phase.nome}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedTemplatePhase && (
+                <p className="text-[11px] text-gray-400 mt-1.5">
+                  {selectedTemplatePhase.nome} — {selectedTemplatePhase.components.length} componentes padrão
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Nome da fase (editável) */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Nome da Fase
+              {t('phase.name')}
             </label>
             <input
               type="text"
               value={phaseName}
               onChange={(e) => setPhaseName(e.target.value)}
-              placeholder="Ex: Instalação de Esquadrias, Pintura..."
+              placeholder={t('phase.namePlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none text-base transition"
               autoFocus
             />
@@ -185,7 +301,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
           {/* Ícone da fase */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Ícone da Fase
+              {t('phase.icon')}
             </label>
             <div className="grid grid-cols-6 sm:grid-cols-12 gap-2">
               {PHASE_ICONS.map((option) => {
@@ -220,7 +336,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <Package size={16} className="text-blue-500" />
-                Componentes disponíveis
+                {t('phase.availableComponents')}
               </h3>
               <div className="grid grid-cols-2 gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200 min-h-[320px] content-start">
                 {AVAILABLE_COMPONENTS.map(comp => {
@@ -243,7 +359,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
                       <div className={`p-2.5 rounded-lg ${isSelected ? 'bg-gray-200' : 'bg-blue-50'}`}>
                         <Icon size={20} className={isSelected ? 'text-gray-400' : 'text-blue-600'} />
                       </div>
-                      <span className="font-medium text-sm">{comp.nome}</span>
+                      <span className="font-medium text-sm">{tComponent(comp.id)}</span>
                     </button>
                   );
                 })}
@@ -254,7 +370,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <Save size={16} className="text-green-500" />
-                Componentes da nova fase
+                {t('phase.selectedComponents')}
               </h3>
               <div
                 onDrop={handleDrop}
@@ -270,8 +386,8 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
                     <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-3">
                       <Plus size={26} />
                     </div>
-                    <p className="text-sm font-medium">Arraste os componentes aqui</p>
-                    <p className="text-xs mt-1">ou clique nos itens ao lado</p>
+                    <p className="text-sm font-medium">{t('phase.dragComponents')}</p>
+                    <p className="text-xs mt-1">{t('phase.clickComponents')}</p>
                   </div>
                 ) : (
                   selectedComponents.map((comp, index) => {
@@ -286,13 +402,13 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
                             {index + 1}
                           </span>
                           <Icon size={18} className="text-blue-600 flex-shrink-0" />
-                          <span className="font-medium text-gray-700 text-sm truncate">{comp.nome}</span>
+                          <span className="font-medium text-gray-700 text-sm truncate">{tComponent(comp.id)}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => removeComponent(comp.id)}
                           className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                          aria-label={`Remover ${comp.nome}`}
+                          aria-label={`Remover ${tComponent(comp.id)}`}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -312,7 +428,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
             onClick={resetAndClose}
             className="px-5 py-2.5 text-gray-600 font-medium rounded-xl hover:bg-gray-200 transition-colors"
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
           <button
             type="button"
@@ -320,7 +436,7 @@ export const CreatePhaseModal: React.FC<CreatePhaseModalProps> = ({ isOpen, onCl
             disabled={saving}
             className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-60 transition-colors"
           >
-            {saving ? 'Criando...' : 'Confirmar Criação'}
+            {saving ? t('phase.creating') : t('phase.confirm')}
           </button>
         </div>
       </div>

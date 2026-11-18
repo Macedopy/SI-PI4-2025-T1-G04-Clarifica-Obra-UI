@@ -1,0 +1,81 @@
+{
+  "app": {
+    "name": "RepObra",
+    "tagline": "Construction Management"
+  },
+  "nav": {
+    "newPhase": "New Phase",
+    "dashboard": "General Dashboard",
+    "account": "My Account"
+  },
+  "phase": {
+    "title": "Configure New Phase",
+    "name": "Phase Name",
+    "namePlaceholder": "Ex: Electrical Installation, Painting...",
+    "icon": "Phase Icon",
+    "components": "Components",
+    "availableComponents": "Available Components",
+    "selectedComponents": "New Phase Components",
+    "dragComponents": "Drag components here",
+    "clickComponents": "or click items on the side",
+    "confirm": "Confirm Creation",
+    "cancel": "Cancel",
+    "creating": "Creating...",
+    "sendReport": "Send Report – {phaseName}",
+    "sendReportShort": "Send Report",
+    "reportSent": "Report for {phaseName} sent successfully!",
+    "reportError": "Error sending report. Try again.",
+    "connectionError": "Connection error."
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "pleaseWait": "Please wait..."
+  },
+  "costs": {
+    "title": "Register Phase Costs",
+    "subtitle": "Enter purchases, machinery, fuel, maintenance, and labor for this phase.",
+    "addEntry": "New Entry",
+    "itemId": "Item / ID",
+    "itemPlaceholder": "ID of material/tool/machinery",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price (R$)",
+    "date": "Date",
+    "supplier": "Supplier",
+    "supplierPlaceholder": "Supplier name",
+    "observations": "Observations",
+    "registerEntry": "Register Entry",
+    "history": "Phase History",
+    "dateCol": "DATE",
+    "qtyCol": "QTY.",
+    "unitPriceCol": "UNIT PRICE",
+    "totalCol": "TOTAL",
+    "boughtByCol": "BOUGHT BY",
+    "supplierCol": "SUPPLIER",
+    "observationsCol": "OBSERVATIONS"
+  },
+  "annotations": {
+    "title": "Phase Annotations",
+    "none": "No annotations yet. Click \"New Annotation\" to start.",
+    "newAnnotation": "New Annotation",
+    "titleLabel": "Title",
+    "contentLabel": "Content",
+    "public": "Public",
+    "save": "Save Annotation",
+    "error": "Error saving annotation."
+  },
+  "user": {
+    "account": "My Account",
+    "language": "Language",
+    "size": "Size",
+    "logout": "Logout",
+    "sizeLabel": "Element size",
+    "sizeDesc": "Adjusts the size of the work elements."
+  }
+}

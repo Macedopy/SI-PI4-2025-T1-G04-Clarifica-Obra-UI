@@ -1,0 +1,10 @@
+{
+  "phase.preparacao_terreno": "Preparação do Terreno",
+  "phase.fundacao": "Fundação",
+  "phase.estrutura": "Estrutura",
+  "phase.alvenaria": "Alvenaria",
+  "phase.instalacoes_eletricas": "Instalações Elétricas",
+  "phase.instalacoes_hidraulicas": "Instalações Hidráulicas",
+  "phase.revestimentos": "Revestimentos",
+  "phase.acabamentos": "Acabamentos"
+}

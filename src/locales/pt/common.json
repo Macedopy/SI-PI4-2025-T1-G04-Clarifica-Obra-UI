@@ -1,0 +1,81 @@
+{
+  "app": {
+    "name": "RepObra",
+    "tagline": "Gerenciamento de Obras"
+  },
+  "nav": {
+    "newPhase": "Nova Fase",
+    "dashboard": "Dashboard Geral",
+    "account": "Minha Conta"
+  },
+  "phase": {
+    "title": "Configurar Nova Fase",
+    "name": "Nome da Fase",
+    "namePlaceholder": "Ex: Instalação de Esquadrias, Pintura...",
+    "icon": "Ícone da Fase",
+    "components": "Componentes",
+    "availableComponents": "Componentes disponíveis",
+    "selectedComponents": "Componentes da nova fase",
+    "dragComponents": "Arraste os componentes aqui",
+    "clickComponents": "ou clique nos itens ao lado",
+    "confirm": "Confirmar Criação",
+    "cancel": "Cancelar",
+    "creating": "Criando...",
+    "sendReport": "Enviar Relatório – {phaseName}",
+    "sendReportShort": "Enviar Relatório",
+    "reportSent": "Relatório de {phaseName} enviado com sucesso!",
+    "reportError": "Erro ao enviar o relatório. Tente novamente.",
+    "connectionError": "Falha na conexão com o servidor."
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "pleaseWait": "Por favor, aguarde..."
+  },
+  "costs": {
+    "title": "Registrar Custos da Fase",
+    "subtitle": "Lance compras, maquinário, combustível, manutenção e mão de obra desta fase.",
+    "addEntry": "Nova Entrada",
+    "itemId": "Item / ID",
+    "itemPlaceholder": "ID do material/ferramenta/maquinário",
+    "quantity": "Quantidade",
+    "unitPrice": "Preço Unitário (R$)",
+    "date": "Data",
+    "supplier": "Fornecedor",
+    "supplierPlaceholder": "Nome do fornecedor",
+    "observations": "Observações",
+    "registerEntry": "Registrar Entrada",
+    "history": "Histórico da Fase",
+    "dateCol": "DATA",
+    "qtyCol": "QTD.",
+    "unitPriceCol": "PREÇO UNITÁRIO",
+    "totalCol": "TOTAL",
+    "boughtByCol": "COMPRADO POR",
+    "supplierCol": "FORNECEDOR",
+    "observationsCol": "OBSERVAÇÕES"
+  },
+  "annotations": {
+    "title": "Anotações da Fase",
+    "none": "Nenhuma anotação ainda. Clique em \"Nova Anotação\" para começar.",
+    "newAnnotation": "Nova Anotação",
+    "titleLabel": "Título",
+    "contentLabel": "Conteúdo",
+    "public": "Público",
+    "save": "Salvar Anotação",
+    "error": "Erro ao salvar anotação."
+  },
+  "user": {
+    "account": "Minha Conta",
+    "language": "Idioma",
+    "size": "Tamanho",
+    "logout": "Logoff",
+    "sizeLabel": "Tamanho dos elementos",
+    "sizeDesc": "Ajusta o tamanho dos elementos da obra."
+  }
+}

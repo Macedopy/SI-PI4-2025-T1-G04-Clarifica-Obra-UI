@@ -2,20 +2,22 @@
 import React, { useState } from 'react';
 import { useUserType } from '../contexts/UserTypeContext';
 import { UI_SIZES, useUiSize } from '../contexts/UiSizeContext';
+import { useLocale } from '../contexts/LocaleContext';
 import type { UiSize } from '../contexts/UiSizeContext';
 
-const roleLabels: Record<string, string> = {
-  CLIENT: 'Cliente',
-  MASTER_BUILDER: 'Mestre de Obras',
-  OWNER: 'Proprietário da Construção',
+const roleLabels: Record<string, Record<'pt' | 'en', string>> = {
+  CLIENT: { pt: 'Cliente', en: 'Client' },
+  MASTER_BUILDER: { pt: 'Mestre de Obras', en: 'Master Builder' },
+  OWNER: { pt: 'Proprietário da Construção', en: 'Construction Owner' },
 };
 
 export const UserMenu: React.FC = () => {
   const { customerId, userType, logout } = useUserType();
   const { uiSize, setUiSize } = useUiSize();
+  const { language, setLanguage, t } = useLocale();
   const [open, setOpen] = useState(false);
 
-  const label = userType ? roleLabels[userType] || userType : 'Usuário';
+  const label = userType ? (roleLabels[userType]?.[language] || userType) : t('user.account');
 
   return (
     <div className="relative inline-block">
@@ -23,7 +25,7 @@ export const UserMenu: React.FC = () => {
       <button
         onClick={() => setOpen(!open)}
         className="p-2 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
-        aria-label="Abrir menu da conta"
+        aria-label={t('user.account')}
       >
         <svg
           className="w-8 h-8"
@@ -68,10 +70,29 @@ export const UserMenu: React.FC = () => {
                   {label}
                 </p>
                 <p className="text-xs text-gray-400 truncate" title={customerId || ''}>
-                  {customerId ? `${customerId.slice(0, 8)}…` : 'Conta'}
+                  {customerId ? `${customerId.slice(0, 8)}…` : t('common.loading')}
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Idioma */}
+          <div className="px-4 py-3 border-b border-gray-100">
+            <label
+              htmlFor="user-menu-language"
+              className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+            >
+              {t('user.language')}
+            </label>
+            <select
+              id="user-menu-language"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as 'pt' | 'en')}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            >
+              <option value="pt">Português</option>
+              <option value="en">English</option>
+            </select>
           </div>
 
           {/* Tamanho dos elementos da visão */}
@@ -80,7 +101,7 @@ export const UserMenu: React.FC = () => {
               htmlFor="user-menu-ui-size"
               className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
             >
-              Tamanho
+              {t('user.size')}
             </label>
             <select
               id="user-menu-ui-size"
@@ -93,7 +114,7 @@ export const UserMenu: React.FC = () => {
               ))}
             </select>
             <p className="text-[11px] text-gray-400 mt-1.5">
-              Ajusta o tamanho dos elementos da obra.
+              {t('user.sizeDesc')}
             </p>
           </div>
 
@@ -102,7 +123,7 @@ export const UserMenu: React.FC = () => {
             <button
               onClick={() => {
                 setOpen(false);
-                alert('Configurações - em desenvolvimento');
+                alert(t('common.saving'));
               }}
               className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
             >
@@ -125,14 +146,14 @@ export const UserMenu: React.FC = () => {
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              Configurações
+              {t('user.account')}
             </button>
 
             {/* Ajuda */}
             <button
               onClick={() => {
                 setOpen(false);
-                alert('Ajuda - em desenvolvimento');
+                alert(t('common.saving'));
               }}
               className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition"
             >

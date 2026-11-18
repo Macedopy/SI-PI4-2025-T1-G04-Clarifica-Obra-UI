@@ -7,6 +7,7 @@ import {
 import { useObra } from "../contexts/ObraContext";
 import { usePhaseNavigation, usePhasesData } from "../contexts/PhasesContext";
 import { useUserType } from "../contexts/UserTypeContext";
+import { useLocale } from "../contexts/LocaleContext";
 import { UserType } from "../types/UserTypes";
 import { CreatePhaseModal } from "./CreatePhaseModal";
 import { deletePhase } from "../services/phases.service";
@@ -16,8 +17,11 @@ export const PhasesBreadcrumb = () => {
   const { phases, refreshPhases } = usePhasesData();
   const { getPhaseProgress, updateSecaoProgress } = useObra();
   const { userType, customerId } = useUserType();
+  const { t } = useLocale();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [constructionId, setConstructionId] = useState<string>('');
+  const [constructionLoading, setConstructionLoading] = useState(false);
+   
   // Normalização para evitar problemas de case-sensitivity ou strings antigas no localStorage
   const normalizedUserType = userType?.toUpperCase();
   const canEdit = normalizedUserType !== 'CLIENT' && normalizedUserType !== 'CLIENTE' && userType !== null;
@@ -29,6 +33,29 @@ export const PhasesBreadcrumb = () => {
       updateSecaoProgress(currentPhaseId, 'some-section', getPhaseProgress(currentPhaseId));
     }
   }, [currentPhaseId, updateSecaoProgress, getPhaseProgress]);
+
+  // Carrega a obra do usuário para obter o constructionId e templateId
+  useEffect(() => {
+    if (!customerId) return;
+    setConstructionLoading(true);
+    fetch(`http://localhost:8080/constructions/user/${customerId}`)
+      .then(async (res) => {
+        if (res.ok) {
+          const data: any[] = await res.json();
+          if (data && data.length > 0) {
+            setConstructionId(data[0].id);
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => setConstructionLoading(false));
+  }, [customerId]);
+
+  // Traduz o nome da fase usando a chave do template ou o nome como fallback
+  const getPhaseDisplayName = (fase: any): string => {
+    const templatePhaseId = fase.templatePhaseId || fase.id;
+    return t(`phase.${templatePhaseId}`, {}) || fase.nome;
+  };
 
   const handleDeletePhase = async (e: React.MouseEvent, phaseId: string) => {
     e.stopPropagation();
@@ -87,10 +114,10 @@ export const PhasesBreadcrumb = () => {
                     ? "bg-green-500 text-white hover:bg-green-600"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
-                title={`${fase.nome}: ${progresso}%`}
+                title={`${getPhaseDisplayName(fase)}: ${progresso}%`}
               >
                 <Icon size={16} />
-                <span>{fase.nome}</span>
+                <span>{getPhaseDisplayName(fase)}</span>
                 {isCompleted && <CheckCircle size={14} className="ml-0.5" />}
               </button>
               
@@ -128,7 +155,7 @@ export const PhasesBreadcrumb = () => {
       <CreatePhaseModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        customerId={customerId || ""} 
+        constructionId={constructionId}
       />
     </>
   );
