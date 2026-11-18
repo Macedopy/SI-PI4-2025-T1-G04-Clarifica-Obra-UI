@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { 
   Camera, Hammer, Package, Truck, Users, Wrench, 
@@ -45,31 +45,6 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
   const { customerId, userType } = useUserType();
   const { phases, phasesData, loading } = usePhasesData();
   const { uiSize, size } = useUiSize();
-  const [showFixedAction, setShowFixedAction] = useState(false);
-  const actionRef = useRef<HTMLDivElement | null>(null);
-
-  // O botão nasce no fim do conteúdo da fase. Quando ele sai por cima da tela
-  // (ou seja, o usuário já passou para as anotações), a barra fixa aparece embaixo.
-  useEffect(() => {
-    if (loading || userType === 'CLIENT') {
-      setShowFixedAction(false);
-      return;
-    }
-
-    const update = () => {
-      const el = actionRef.current;
-      if (!el) return;
-      setShowFixedAction(el.getBoundingClientRect().bottom < 0);
-    };
-
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-    };
-  }, [loading, userType, phaseId]);
 
   if (loading) return <div className="p-10 text-center text-xl font-semibold">Carregando dados da fase...</div>;
 
@@ -124,7 +99,7 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
   };
 
   return (
-    <div className={showFixedAction ? 'pb-24' : ''}>
+    <div className={userType !== 'CLIENT' ? 'pb-24' : ''}>
       <PhaseLayout
         phase={{ id: phaseId, nome: phaseName, icon: phaseInfo?.icon || Package, secoes }}
         initialData={initialData}
@@ -139,18 +114,6 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
           />
         ))}
       </PhaseLayout>
-
-      {/* Botão original: permanece no lugar, no fim do conteúdo da fase */}
-      {userType !== 'CLIENT' && (
-        <div ref={actionRef} className="flex justify-center md:justify-end mt-4 md:mt-8">
-          <button
-            onClick={handleSendReport}
-            className="w-full md:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-lg md:text-xl px-8 md:px-12 py-4 md:py-5 rounded-2xl shadow-2xl transition transform hover:scale-105"
-          >
-            Enviar Relatório – {phaseName}
-          </button>
-        </div>
-      )}
 
       {/* Anotações da fase - visível para Mestre de Obras e Proprietário */}
       {userType !== 'CLIENT' && (
@@ -174,8 +137,8 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
         </div>
       )}
 
-      {/* Barra fixa: aparece depois de passar o botão original (já nas anotações) */}
-      {showFixedAction && userType !== 'CLIENT' && createPortal(
+      {/* Barra fixa do rodapé: sempre visível enquanto estiver nesta fase (não-cliente) */}
+      {userType !== 'CLIENT' && createPortal(
         <div className="fixed inset-x-0 bottom-0 z-[120] bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-[0_-6px_20px_rgba(0,0,0,0.10)]">
           <div
             className="mx-auto px-4 sm:px-6 py-3 flex justify-end"
