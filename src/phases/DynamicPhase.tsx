@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { 
   Camera, Hammer, Package, Truck, Users, Wrench, 
-  Info, AlertTriangle, FileText 
+  Info, AlertTriangle, FileText, Send 
 } from "lucide-react";
 import { PhaseLayout } from "../components/PhaseLayout";
 import { SecaoConteudo } from "../components/SecaoConteudo";
@@ -139,16 +139,18 @@ export const DynamicPhase: React.FC<DynamicPhaseProps> = ({ phaseId, phaseName, 
 
       {/* Barra fixa do rodapé: sempre visível enquanto estiver nesta fase (não-cliente) */}
       {userType !== 'CLIENT' && createPortal(
-        <div className="fixed inset-x-0 bottom-0 z-[120] bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-[0_-6px_20px_rgba(0,0,0,0.10)]">
+        <div className="fixed-action-bar fixed inset-x-0 bottom-0 z-[120] bg-white/90 backdrop-blur-md border-t border-gray-200/50 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]">
           <div
-            className="mx-auto px-4 sm:px-6 py-3 flex justify-end"
+            className="mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-end gap-2"
             style={{ maxWidth: uiSize === 'large' ? '108rem' : size.maxWidth }}
           >
             <button
               type="button"
               onClick={handleSendReport}
-              className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-base sm:text-lg px-6 sm:px-10 py-3 rounded-xl shadow-lg transition transform hover:scale-[1.02]"
+              className="flex items-center gap-2 w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold text-base sm:text-lg px-6 sm:px-10 py-2.5 sm:py-3 rounded-2xl shadow-lg shadow-emerald-900/20 transition-all duration-200 transform hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:ring-offset-2"
+              aria-label={`Enviar relatório da fase ${phaseName}`}
             >
+              <Send size={18} strokeWidth={2.2} />
               <span className="hidden sm:inline">Enviar Relatório – {phaseName}</span>
               <span className="sm:hidden">Enviar Relatório</span>
             </button>

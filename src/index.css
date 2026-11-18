@@ -34,3 +34,13 @@ code {
 .modal-panel {
   animation: modal-pop-in 180ms ease-out;
 }
+
+/* Barra fixa do rodapé: entrada suave */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fixed-action-bar {
+  animation: fade-in-up 300ms ease-out;
+}
