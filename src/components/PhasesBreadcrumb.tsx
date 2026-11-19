@@ -53,8 +53,16 @@ export const PhasesBreadcrumb = () => {
 
   // Traduz o nome da fase usando a chave do template ou o nome como fallback
   const getPhaseDisplayName = (fase: any): string => {
-    const templatePhaseId = fase.templatePhaseId || fase.id;
-    return t(`phase.${templatePhaseId}`, {}) || fase.nome;
+    // Se tem templatePhaseId, tenta traduzir
+    if (fase.templatePhaseId) {
+      const translated = t(`phase.${fase.templatePhaseId}`, {});
+      // Se a traducao nao parece uma chave nao traduzida, usa ela
+      if (translated && !translated.startsWith('phase.')) {
+        return translated;
+      }
+    }
+    // Fallback para o nome salvo no banco
+    return fase.nome || fase.name || 'Fase';
   };
 
   const handleDeletePhase = async (e: React.MouseEvent, phaseId: string) => {
