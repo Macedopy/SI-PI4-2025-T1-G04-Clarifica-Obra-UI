@@ -28,6 +28,13 @@ export const PhasesBreadcrumb = () => {
 
   console.log("PhasesBreadcrumb Debug - Original:", userType, "Normalized:", normalizedUserType, "CanEdit:", canEdit);
 
+  // Recarrega fases quando o componente monta ou o customerId muda
+  useEffect(() => {
+    if (customerId) {
+      refreshPhases();
+    }
+  }, [customerId, refreshPhases]);
+
   useEffect(() => {
     if (currentPhaseId && currentPhaseId !== "dashboard") {
       updateSecaoProgress(currentPhaseId, 'some-section', getPhaseProgress(currentPhaseId));
