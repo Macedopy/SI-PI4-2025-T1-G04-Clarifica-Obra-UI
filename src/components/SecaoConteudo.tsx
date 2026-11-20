@@ -2,12 +2,10 @@
 
 // src/components/SecaoConteudo.tsx
 import React, { useState, useEffect } from 'react';
-import { Camera, AlertTriangle, TrendingUp } from "lucide-react";
-import { MateriaisUtilizados } from "./used-materials/used-materials";
-import { FerramentasUtilizadas } from "./tools/tools";
-import { MaquinariosUtilizados } from "./machinery/machinery";
-import { EquipeUtilizada } from "./team-present/team-present";
-import { ServicosExecutados } from "./executed-services/executed-services";
+import { Camera, AlertTriangle, TrendingUp, Package, Truck, Wrench } from "lucide-react";
+import { LancamentoItensCusto } from "./LancamentoItensCusto";
+import { LancamentoServicosCusto } from "./LancamentoServicosCusto";
+import { LancamentoEquipeCusto } from "./LancamentoEquipeCusto";
 import { InformacoesGerais } from "./general/general-information";
 import { useUserType } from '../contexts/UserTypeContext';
 import { UserType } from '../types/UserTypes';
@@ -150,23 +148,23 @@ export const SecaoConteudo = ({
   }
 
   if (secaoId === "materiais") {
-    return <MateriaisUtilizados isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+    return <LancamentoItensCusto faseId={faseId} secaoId="materiais" secaoNome="Materiais" isReadOnly={effectiveIsReadOnly} />;
   }
 
   if (secaoId === "servicos") {
-    return <ServicosExecutados isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+    return <LancamentoServicosCusto faseId={faseId} isReadOnly={effectiveIsReadOnly} />;
   }
 
   if (secaoId === "equipe") {
-    return <EquipeUtilizada isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+    return <LancamentoEquipeCusto faseId={faseId} isReadOnly={effectiveIsReadOnly} />;
   }
 
   if (secaoId === "maquinarios") {
-    return <MaquinariosUtilizados isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+    return <LancamentoItensCusto faseId={faseId} secaoId="maquinarios" secaoNome="Maquinários" isReadOnly={effectiveIsReadOnly} />;
   }
 
   if (secaoId === "ferramentas") {
-    return <FerramentasUtilizadas isReadOnly={effectiveIsReadOnly} faseId={faseId} initialData={initialData} />;
+    return <LancamentoItensCusto faseId={faseId} secaoId="ferramentas" secaoNome="Ferramentas" isReadOnly={effectiveIsReadOnly} />;
   }
 
   if (secaoId === "geral") {
